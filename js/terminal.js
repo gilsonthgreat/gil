@@ -216,13 +216,17 @@
 
   function music([action, value]) {
     const player = GIL.music;
-    const { state, title, error, volume } = player.info();
+    const { state, title, error, volume, track, tracks } = player.info();
     switch (action?.toLowerCase()) {
       case undefined:
       case "status":
-        print(["♪ ", "t-hl"], [title || "unknown", "t-val"], [`  ${state} · volume ${volume}`, "t-dim"]);
+        print(
+          ["♪ ", "t-hl"],
+          [title || "unknown", "t-val"],
+          [`  ${state} · track ${track} of ${tracks} · volume ${volume}`, "t-dim"],
+        );
         if (error) print([error, "t-err"]);
-        return print(["usage: music [play|pause|stop|vol 0-100]", "t-faint"]);
+        return print(["usage: music [play|pause|stop|next|prev|vol 0-100]", "t-faint"]);
       case "play":
         return player.play() ? print(["▶ playing", "t-dim"]) : print([error || "music can't play right now", "t-err"]);
       case "pause":
@@ -231,6 +235,13 @@
       case "stop":
         player.stop();
         return print(["■ stopped", "t-dim"]);
+      case "next":
+      case "skip":
+        player.next();
+        return print([`⏭ track ${player.info().track} of ${tracks}`, "t-dim"]);
+      case "prev":
+        player.prev();
+        return print([`⏮ track ${player.info().track} of ${tracks}`, "t-dim"]);
       case "vol":
       case "volume":
         if (value === undefined || !Number.isFinite(Number(value))) {
@@ -277,7 +288,7 @@
     ls: { desc: "list files", run: ls },
     cat: { args: "<file>", desc: "print a file", run: cat },
     open: { args: "<app>", desc: "open a window", run: open },
-    music: { args: "[play|pause|stop|vol n]", desc: "control the music", run: music },
+    music: { args: "[play|pause|next|prev|vol n]", desc: "control the music", run: music },
     bio: { args: "<animal>", desc: "read about one of the animals", run: bio },
     links: { desc: `${site.name}'s links`, run: links },
     whoami: {
@@ -307,6 +318,8 @@
     play: () => music(["play"]),
     pause: () => music(["pause"]),
     stop: () => music(["stop"]),
+    next: () => music(["next"]),
+    skip: () => music(["next"]),
     sudo: () => print([`${USER} is not in the sudoers file. this incident will be reported.`, "t-err"]),
     rm: () => print([`rm: nice try. ${site.name}'s files stay put.`, "t-err"]),
     hi: () => print(["hey :)", "t-hl"]),
@@ -349,7 +362,7 @@
     const options = {
       cat: files.filter((file) => file.endsWith(".txt")),
       open: Object.keys(apps),
-      music: ["play", "pause", "stop", "vol"],
+      music: ["play", "pause", "stop", "next", "prev", "vol"],
     };
     const pool = parts.length === 1 ? Object.keys(commands) : options[parts[0]];
     if (!pool) return;

@@ -144,6 +144,40 @@
     });
   }
 
+  // right edge, bottom edge and the corner grip; sizes are kept on screen and above each window's CSS minimum
+  function enableResize(w) {
+    for (const handle of $$(".resize", w.el)) {
+      handle.addEventListener("pointerdown", (e) => {
+        if (mobile.matches || e.button !== 0) return;
+        e.preventDefault();
+        focus(w.id);
+        const edge = handle.dataset.edge;
+        const start = { x: e.clientX, y: e.clientY, width: w.el.offsetWidth, height: w.el.offsetHeight };
+        const css = getComputedStyle(w.el);
+        const minWidth = Math.max(240, parseFloat(css.minWidth) || 0);
+        const minHeight = Math.max(140, parseFloat(css.minHeight) || 0);
+        const clamp = (v, min, max) => Math.max(min, Math.min(v, Math.max(min, max)));
+        handle.setPointerCapture(e.pointerId);
+        document.documentElement.classList.add("is-dragging");
+        const onMove = (ev) => {
+          const { vw, vh } = viewport();
+          if (edge !== "s") w.el.style.width = `${clamp(start.width + ev.clientX - start.x, minWidth, vw - w.x - 8)}px`;
+          if (edge !== "e")
+            w.el.style.height = `${clamp(start.height + ev.clientY - start.y, minHeight, vh - w.y - 8)}px`;
+        };
+        const onEnd = () => {
+          handle.removeEventListener("pointermove", onMove);
+          handle.removeEventListener("pointerup", onEnd);
+          handle.removeEventListener("pointercancel", onEnd);
+          document.documentElement.classList.remove("is-dragging");
+        };
+        handle.addEventListener("pointermove", onMove);
+        handle.addEventListener("pointerup", onEnd);
+        handle.addEventListener("pointercancel", onEnd);
+      });
+    }
+  }
+
   function renderTasks() {
     for (const w of Object.values(wins)) {
       const current = w.state === "open" && active === w.id;
@@ -170,6 +204,9 @@
         ]),
       ]),
     );
+    for (const edge of ["e", "s", "se"]) {
+      node.append(el("span", { class: `resize resize-${edge}`, "data-edge": edge, "aria-hidden": "true" }));
+    }
     icons.append(
       el("button", { type: "button", class: "icon", "data-open": id }, [
         el("span", { class: "icon-tile" }, [icon(iconId)]),
@@ -187,6 +224,7 @@
     node.addEventListener("pointerdown", () => focus(id));
     node.addEventListener("focusin", () => focus(id));
     enableDrag(w);
+    enableResize(w);
     wins[id] = w;
   }
 
@@ -269,7 +307,6 @@
     // on medium screens music overlaps the terminal, so open it last to keep its play button on top
     const order = wide || mobile.matches ? ["profile", "music", "terminal"] : ["profile", "terminal", "music"];
     for (const id of order) open(id, { quiet: true });
-    if (wide && viewport().vh - (wins.music.y + wins.music.el.offsetHeight) > 360) open("sysmon", { quiet: true });
     const hash = location.hash.slice(1);
     if (Object.hasOwn(wins, hash)) open(hash);
     GIL.terminal.start();
@@ -289,7 +326,7 @@
       ok(`mounted /home/${site.name}`),
       ok(`started ${site.name}sh`),
       ok("started music.exe"),
-      ok(`woke up ${ANIMALS.length} animals`),
+      ok(`woke up ${ANIMALS.length} animals (hold the mouse button to lead them)`),
       ok("taught the chess bot the rules"),
       ok(`loaded profile ${site.handle}`),
       ok("reached target: desktop"),

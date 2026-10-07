@@ -112,6 +112,14 @@
         <rect x="6.5" y="5.5" width="4" height="13" rx="1" fill="currentColor" stroke="none" />
         <rect x="13.5" y="5.5" width="4" height="13" rx="1" fill="currentColor" stroke="none" />
       </symbol>
+      <symbol id="i-skip-prev" viewBox="0 0 24 24">
+        <rect x="5.5" y="6" width="2.5" height="12" rx=".5" fill="currentColor" stroke="none" />
+        <path d="M18.5 6v12L9.5 12z" fill="currentColor" stroke="none" />
+      </symbol>
+      <symbol id="i-skip-next" viewBox="0 0 24 24">
+        <path d="M5.5 6v12l9-6z" fill="currentColor" stroke="none" />
+        <rect x="16" y="6" width="2.5" height="12" rx=".5" fill="currentColor" stroke="none" />
+      </symbol>
       <symbol id="i-stop" viewBox="0 0 24 24">
         <rect x="6.5" y="6.5" width="11" height="11" rx="1.5" fill="currentColor" stroke="none" />
       </symbol>
@@ -185,7 +193,7 @@
       <section class="window" data-app="music" data-title="music.exe" data-icon="i-music" hidden>
         <div class="window-body music">
           <div class="np">
-            <span class="np-label">now playing</span>
+            <span class="np-label">now playing <span id="music-track"></span></span>
             <span class="np-title" id="music-title"><span class="np-text">loading…</span></span>
           </div>
           <div class="yt-frame">
@@ -205,11 +213,17 @@
             <span id="music-dur">0:00</span>
           </div>
           <div class="controls">
+            <button type="button" class="ctrl ctrl-icon" id="music-prev" aria-label="previous song">
+              <svg class="ico" aria-hidden="true"><use href="#i-skip-prev" /></svg>
+            </button>
             <button type="button" class="ctrl ctrl-main" id="music-toggle" aria-label="play music">
               <svg class="ico" aria-hidden="true"><use href="#i-play" /></svg><span class="label">play</span>
             </button>
-            <button type="button" class="ctrl" id="music-stop" aria-label="stop music">
-              <svg class="ico" aria-hidden="true"><use href="#i-stop" /></svg><span>stop</span>
+            <button type="button" class="ctrl ctrl-icon" id="music-next" aria-label="next song">
+              <svg class="ico" aria-hidden="true"><use href="#i-skip-next" /></svg>
+            </button>
+            <button type="button" class="ctrl ctrl-icon" id="music-stop" aria-label="stop music">
+              <svg class="ico" aria-hidden="true"><use href="#i-stop" /></svg>
             </button>
             <label class="vol">
               <svg class="ico" aria-hidden="true"><use href="#i-volume" /></svg>
@@ -354,8 +368,8 @@
       <section class="window" data-app="zoo" data-title="zoo.exe" data-icon="i-paw" hidden>
         <div class="window-body zoo">
           <p class="zoo-intro">
-            <span id="zoo-count"></span> animals live on this desktop. right-click one (or long-press on a phone) to
-            read about it, or pick one here.
+            <span id="zoo-count"></span> animals live here, and a different few come out each visit. hold the mouse
+            button down and they'll follow you; right-click one (or long-press on a phone) to read about it.
           </p>
           <div class="zoo-grid" id="zoo-grid"></div>
         </div>

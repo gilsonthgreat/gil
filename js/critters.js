@@ -3,7 +3,11 @@
   const layer = document.getElementById("critters");
   const taskbar = document.querySelector(".taskbar");
   const STORE_KEY = "gilos-pets";
-  const LINE_LENGTH = 16;
+  // a different handful comes out each visit; zoo.exe lists everyone
+  const LINE_LENGTH = 10;
+  const FLOOR_COUNT = GIL.mobile.matches ? 3 : 5;
+  const FLYER_COUNT = GIL.mobile.matches ? 1 : 2;
+  const HOLD_DELAY = 250; // ms the mouse button has to stay down before the line follows, so clicks don't count
   const HEAD_GAP = 30; // the front of the line stops this far from the cursor
   const HEAD_SPEED = 900; // px/s
   const WALK_SPEED = { crawl: 9, slither: 26, waddle: 30, scuttle: 36, hop: 62 };
@@ -115,14 +119,28 @@
     layer.append(node);
   }
 
-  const pointer = { x: 0, y: 0, movedAt: 0, seen: false };
+  const pointer = { x: 0, y: 0, movedAt: 0, held: false };
+  let holdTimer = 0;
   window.addEventListener("pointermove", (e) => {
     if (e.pointerType !== "mouse") return;
     pointer.x = e.clientX;
     pointer.y = e.clientY;
     pointer.movedAt = performance.now();
-    pointer.seen = true;
   });
+  // the line only follows while the mouse button is held down
+  window.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    pointer.x = e.clientX;
+    pointer.y = e.clientY;
+    holdTimer = setTimeout(() => (pointer.held = true), HOLD_DELAY);
+  });
+  const release = () => {
+    clearTimeout(holdTimer);
+    pointer.held = false;
+  };
+  window.addEventListener("pointerup", release);
+  window.addEventListener("pointercancel", release);
+  window.addEventListener("blur", release);
 
   let line = [];
   let floor = [];
@@ -147,7 +165,7 @@
     const walkers = shuffle(ANIMALS.filter((a) => a.gait !== "fly" && a.gait !== "hang"));
     // the line follows a mouse cursor; on touch screens everyone walks the floor instead
     const lineAnimals = GIL.finePointer ? walkers.slice(0, LINE_LENGTH) : [];
-    const floorAnimals = walkers.slice(lineAnimals.length, lineAnimals.length + Math.floor(width / 64));
+    const floorAnimals = walkers.slice(lineAnimals.length, lineAnimals.length + FLOOR_COUNT);
 
     floor = floorAnimals.map((animal, i) => {
       const c = new Critter(animal, ((i + 0.5) / floorAnimals.length) * width, y);
@@ -166,8 +184,8 @@
       { x: head.x - length - 60, y },
     ];
 
-    flyers = ANIMALS.filter((a) => a.gait === "fly")
-      .slice(0, GIL.mobile.matches ? 3 : undefined)
+    flyers = shuffle(ANIMALS.filter((a) => a.gait === "fly"))
+      .slice(0, FLYER_COUNT)
       .map((animal) => {
         const start = skyPoint();
         const c = new Critter(animal, start.x, start.y);
@@ -189,15 +207,16 @@
 
   function updateLine(dt) {
     if (!line.length) return;
-    if (pointer.seen) {
-      const dx = pointer.x - head.x;
-      const dy = pointer.y - head.y;
-      const distance = Math.hypot(dx, dy);
-      if (distance > HEAD_GAP) {
-        const step = Math.min(distance - HEAD_GAP, (HEAD_SPEED * dt) / 1000);
-        head.x += (dx / distance) * step;
-        head.y += (dy / distance) * step;
-      }
+    // while held, the front of the line heads for the cursor; once let go, it walks straight back down to the floor
+    const goal = pointer.held ? { x: pointer.x, y: pointer.y, gap: HEAD_GAP } : { x: head.x, y: ground(), gap: 0 };
+    const dx = goal.x - head.x;
+    const dy = goal.y - head.y;
+    const toGoal = Math.hypot(dx, dy);
+    if (toGoal > goal.gap + 0.5) {
+      const speed = pointer.held ? HEAD_SPEED : HEAD_SPEED * 0.6;
+      const step = Math.min(toGoal - goal.gap, (speed * dt) / 1000);
+      head.x += (dx / toGoal) * step;
+      head.y += (dy / toGoal) * step;
     }
     // trail[0] always sits on the head; a new point is laid down every few pixels
     trail[0] = { x: head.x, y: head.y };

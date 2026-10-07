@@ -9,30 +9,34 @@ build step.
 - **friends.exe**: shoutouts on a spinning 3D carousel
 - **skills.exe**: skill levels as 3D segmented bars
 - **gallery.exe**: a slideshow of images or gifs
-- **music.exe**: a YouTube video with custom controls, on repeat
+- **music.exe**: a YouTube playlist with custom controls that loops back to the first song
 - **sysmon.exe**: live frame rate, cursor speed and frame time graphs, plus gil's clock and the visitor's
 - **chess.exe**: chess against a bot (easy, normal, hard) with a 3D board view
 - **flappy.exe**: a flappy bird clone with parallax scenery
 - **zoo.exe**: all 50 animals, each with a short bio
 
-Around the windows: a dot cursor with a trailing ring, 50 animals (a line of 16 that follows the cursor, the rest
-wandering along the taskbar, flying around, or hanging from the top of the screen), birds and shooting stars, and a
-wireframe planet. Right-click any animal, or long-press it on a phone, for its bio. The animals can be hidden from the
-start menu or with `pets` in the terminal. Visitors who ask their system for reduced motion get a calmer page with the
-animals off.
+Windows can be dragged by their title bars and resized from the right edge, the bottom edge or the corner grip.
+
+Around the windows: a dot cursor with a trailing ring, birds and shooting stars, a wireframe planet, and a few of the 50
+animals, a different handful each visit. A line of 10 waits on the taskbar and follows the cursor while the mouse button
+is held down, then walks back when it's let go; a few more wander the taskbar, a couple fly around, and a sloth hangs
+from the top of the screen. Right-click any animal, or long-press it on a phone, for its bio. The animals can be hidden
+from the start menu or with `pets` in the terminal. Visitors who ask their system for reduced motion get a calmer page
+with the animals off.
 
 ## Editing
 
 All the text lives in [`config.js`](config.js): name, handle, pronouns, age, timezone, roots (flags), the about-me lines
-and likes, DNI, shoutouts, skills, gallery images, links and the song. To change the profile picture, replace
+and likes, DNI, shoutouts, skills, gallery images, links and the music. To change the profile picture, replace
 `assets/avatar.png` with a square image. Gallery images go in `assets/gallery/` and are listed under `gallery` in
 `config.js`; animated gifs work there too.
 
 The animals and their bios are in [`animals.js`](animals.js). Each one needs a matching picture in `assets/animals/`.
 
-The song is `music.youtubeId`, the part after `watch?v=` in a YouTube link. Browsers don't allow sound until a visitor
-clicks or presses a key, so it starts on their first click; set `playOnFirstClick: false` to wait for the play button
-instead. If the video's owner doesn't allow embedding, the player shows a "listen on youtube" link.
+The music is `music.playlist` in `config.js`: one entry per song, using the part after `watch?v=` in a YouTube link,
+played in order and then from the top again. Browsers don't allow sound until a visitor clicks or presses a key, so it
+starts on their first click; set `playOnFirstClick: false` to wait for the play button instead. A video whose owner
+doesn't allow embedding is skipped; if none of them will play, the player shows a "listen on youtube" link.
 
 ## Running locally
 

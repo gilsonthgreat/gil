@@ -61,8 +61,17 @@ window.SITE = {
   links: [],
 
   music: {
-    youtubeId: "d8_fZedifX0", // the part after watch?v= in a YouTube link
-    title: "", // empty uses the video's own title
+    // played in order, then back to the top. youtubeId is the part after watch?v= in a YouTube link;
+    // leave title empty to use the video's own title
+    playlist: [
+      { youtubeId: "Ts5ZiojkOe4", title: "" },
+      { youtubeId: "d8_fZedifX0", title: "" }, // ENA
+      { youtubeId: "I0S5CyJoZpw", title: "" },
+      { youtubeId: "VRYs-QfdToc", title: "" },
+      { youtubeId: "H-P1IcF137M", title: "" },
+      { youtubeId: "IctykwvNQwQ", title: "" },
+      { youtubeId: "J4ypOJbC1lA", title: "" },
+    ],
     volume: 40,
     playOnFirstClick: true,
   },

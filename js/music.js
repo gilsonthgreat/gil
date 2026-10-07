@@ -9,6 +9,9 @@
     fallback: $("#yt-fallback"),
     fallbackMsg: $("#yt-fallback-msg"),
     link: $("#music-link"),
+    track: $("#music-track"),
+    prev: $("#music-prev"),
+    next: $("#music-next"),
     toggle: $("#music-toggle"),
     toggleIcon: $("#music-toggle use"),
     toggleLabel: $("#music-toggle .label"),
@@ -36,7 +39,9 @@
   let hint = "";
   let wantPlay = false;
   let stopping = false;
-  let title = cfg.title;
+  // a track's title comes from config.js, or from YouTube once that video has loaded
+  const tracks = cfg.playlist.map((track) => ({ id: track.youtubeId, title: track.title, failed: false }));
+  let index = 0;
   let volume = clampVolume(GIL.store.get(VOLUME_KEY) ?? cfg.volume);
   let position = 0;
   let duration = 0;
@@ -58,9 +63,13 @@
     range.style.setProperty("--fill", `${Math.min(100, Math.max(0, pct))}%`);
   }
 
+  function updateLink() {
+    ui.link.href = `https://www.youtube.com/watch?v=${encodeURIComponent(tracks[index].id)}`;
+  }
+
   function load() {
-    ui.link.href = `https://www.youtube.com/watch?v=${encodeURIComponent(cfg.youtubeId)}`;
-    if (!cfg.youtubeId) return fail("no song is set. add a youtubeId in config.js.");
+    if (!tracks.length) return fail("no songs yet. add one to the playlist in config.js.");
+    updateLink();
     window.onYouTubeIframeAPIReady = create;
     const script = document.createElement("script");
     script.src = "https://www.youtube.com/iframe_api";
@@ -75,7 +84,7 @@
     const playerVars = { playsinline: 1, rel: 0, controls: 0, disablekb: 1, fs: 0, iv_load_policy: 3 };
     if (location.protocol.startsWith("http")) playerVars.origin = location.origin;
     player = new YT.Player("yt-player", {
-      videoId: cfg.youtubeId,
+      videoId: tracks[index].id,
       width: "100%",
       height: "100%",
       playerVars,
@@ -112,6 +121,8 @@
         break;
       case YT.PlayerState.ENDED:
         if (wantPlay) {
+          // one song loops; a playlist moves on and wraps around at the end
+          if (tracks.length > 1) return go(index + 1);
           player.seekTo(0, true);
           player.playVideo();
           return;
@@ -125,8 +136,15 @@
     render();
   }
 
+  // a video that won't play is skipped; only when none of them will does the player give up
   function onError(e) {
-    fail(ERRORS[e.data] || "youtube couldn't play this video.");
+    const message = ERRORS[e.data] || "youtube couldn't play this video.";
+    tracks[index].failed = true;
+    const offsets = tracks.map((_, i) => (index + 1 + i) % tracks.length);
+    const nextGood = offsets.find((i) => !tracks[i].failed);
+    if (nextGood === undefined) return fail(message);
+    hint = `skipped track ${index + 1}: ${message}`;
+    go(nextGood);
   }
 
   function fail(message) {
@@ -140,10 +158,45 @@
   }
 
   function readMeta() {
-    // getVideoData isn't part of the documented API, so don't count on it
+    // getVideoData isn't part of the documented API, so don't count on it. Checking video_id keeps
+    // the previous song's title from sticking to the next one right after a switch.
     const data = player.getVideoData?.();
-    if (!cfg.title && data?.title) title = data.title;
+    const track = tracks[index];
+    if (!track.title && data?.title && data.video_id === track.id) track.title = data.title;
     duration = player.getDuration() || duration;
+  }
+
+  // Switching keeps playing if music was playing, otherwise it just loads the video.
+  // Songs that already failed are passed over in the direction of travel.
+  function go(i, step = 1) {
+    if (!ready || state === "error") return;
+    index = (i + tracks.length) % tracks.length;
+    for (let n = 0; tracks[index].failed && n < tracks.length; n++) {
+      index = (index + step + tracks.length) % tracks.length;
+    }
+    position = 0;
+    duration = 0;
+    stopping = false;
+    updateLink();
+    if (wantPlay) {
+      player.loadVideoById(tracks[index].id);
+    } else {
+      player.cueVideoById(tracks[index].id);
+      state = "ready";
+    }
+    render();
+  }
+
+  const next = () => go(index + 1);
+
+  // like most players: back to the start of the song, or to the previous song if it just started
+  function prev() {
+    if (position > 3 && ready) {
+      player.seekTo(0, true);
+      position = 0;
+      return renderProgress();
+    }
+    go(index - 1, -1);
   }
 
   function play() {
@@ -221,7 +274,7 @@
   const STATUS = {
     loading: "connecting to youtube…",
     ready: "ready. press play.",
-    playing: "playing · on repeat",
+    playing: "playing",
     buffering: "buffering…",
     paused: "paused",
     stopped: "stopped",
@@ -268,14 +321,16 @@
     ui.toggle.disabled = broken;
     ui.stop.disabled = broken;
     ui.seek.disabled = broken || !ready;
-    setTitle(title || (broken ? "no song loaded" : "loading…"));
+    ui.prev.disabled = ui.next.disabled = broken || !ready || tracks.length < 2;
+    ui.track.textContent = tracks.length > 1 ? `${index + 1} / ${tracks.length}` : "";
+    setTitle(tracks[index]?.title || (broken ? "no song loaded" : "loading…"));
     ui.status.textContent = statusText();
     renderProgress();
     document.dispatchEvent(new CustomEvent("music:change", { detail: info() }));
   }
 
   function info() {
-    return { state, title, error, volume };
+    return { state, title: tracks[index]?.title || "", error, volume, track: index + 1, tracks: tracks.length };
   }
 
   // fixed, uneven timings so the bars don't pulse in sync
@@ -288,6 +343,8 @@
   }
 
   ui.toggle.addEventListener("click", toggle);
+  ui.prev.addEventListener("click", prev);
+  ui.next.addEventListener("click", next);
   ui.stop.addEventListener("click", stop);
   ui.vol.value = volume;
   fill(ui.vol, volume);
@@ -321,7 +378,7 @@
     window.addEventListener("keydown", onFirstInput, true);
   }
 
-  GIL.music = { play, pause, stop, setVolume, info };
+  GIL.music = { play, pause, stop, next, prev, setVolume, info };
   render();
   load();
 })();
