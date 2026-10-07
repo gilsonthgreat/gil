@@ -326,7 +326,7 @@
       ok(`mounted /home/${site.name}`),
       ok(`started ${site.name}sh`),
       ok("started music.exe"),
-      ok(`woke up ${ANIMALS.length} animals (hold the mouse button to lead them)`),
+      ok(`woke up the habitat: ${ANIMALS.length} animals`),
       ok("taught the chess bot the rules"),
       ok(`loaded profile ${site.handle}`),
       ok("reached target: desktop"),
@@ -365,7 +365,15 @@
     step();
   }
 
-  GIL.desktop = { open, close, isOpen };
+  // where the open windows are, for animals to stand on top of or hang underneath
+  const rects = () =>
+    mobile.matches
+      ? []
+      : Object.values(wins)
+          .filter((w) => w.state === "open" && w.placed)
+          .map((w) => ({ id: w.id, x: w.x, y: w.y, width: w.el.offsetWidth, height: w.el.offsetHeight }));
+
+  GIL.desktop = { open, close, isOpen, rects };
 
   tick();
   setInterval(tick, 1000);

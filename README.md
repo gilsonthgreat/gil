@@ -13,16 +13,19 @@ build step.
 - **sysmon.exe**: live frame rate, cursor speed and frame time graphs, plus gil's clock and the visitor's
 - **chess.exe**: chess against a bot (easy, normal, hard) with a 3D board view
 - **flappy.exe**: a flappy bird clone with parallax scenery
-- **zoo.exe**: all 50 animals, each with a short bio
+- **zoo.exe**: all 58 animals, each with a short bio
 
 Windows can be dragged by their title bars and resized from the right edge, the bottom edge or the corner grip.
 
-Around the windows: a dot cursor with a trailing ring, birds and shooting stars, a wireframe planet, and a few of the 50
-animals, a different handful each visit. A line of 10 waits on the taskbar and follows the cursor while the mouse button
-is held down, then walks back when it's let go; a few more wander the taskbar, a couple fly around, and a sloth hangs
-from the top of the screen. Right-click any animal, or long-press it on a phone, for its bio. The animals can be hidden
-from the start menu or with `pets` in the terminal. Visitors who ask their system for reduced motion get a calmer page
-with the animals off.
+Around the windows: a dot cursor with a trailing ring, birds and shooting stars, a wireframe planet, and a habitat of
+animals, a different set each visit. They wander the taskbar and the tops of open windows, greet each other, play-fight,
+chase, and nap in piles (more of them at night). Birds and bugs fly around and perch on windows, a flock passes over
+now and then, and a sloth hangs from the top of the screen or the bottom of a window.
+
+Any animal can be picked up and carried: drop it on a window and it lives up there, riding along when the window is
+dragged and falling off when it's closed. Fling it and it arcs through the air. A click boops it; right-click, or
+long-press on a phone, shows its bio. The animals can be hidden from the start menu or with `pets` in the terminal.
+Visitors who ask their system for reduced motion get a calmer page with the animals off.
 
 ## Editing
 
@@ -32,6 +35,8 @@ and likes, DNI, shoutouts, skills, gallery images, links and the music. To chang
 `config.js`; animated gifs work there too.
 
 The animals and their bios are in [`animals.js`](animals.js). Each one needs a matching picture in `assets/animals/`.
+Who likes to fight, who naps in piles, who chases whom, and the sounds they make are lists at the top of
+[`js/habitat.js`](js/habitat.js).
 
 The music is `music.playlist` in `config.js`: one entry per song, using the part after `watch?v=` in a YouTube link,
 played in order and then from the top again. Browsers don't allow sound until a visitor clicks or presses a key, so it
@@ -71,7 +76,8 @@ Any static host works. Two free options:
 | `js/sky.js`        | stars, planet, birds and shooting stars                                  |
 | `js/cursor.js`     | the dot cursor                                                           |
 | `js/zoo.js`        | the animal bio card and zoo.exe                                          |
-| `js/critters.js`   | the animals: the cursor line, walkers, flyers and the sloth              |
+| `js/critters.js`   | one animal on screen: its sprite and how it's posed each frame           |
+| `js/habitat.js`    | what the animals do: walking, fights, naps, flying, carrying             |
 | `js/music.js`      | the YouTube player and its controls                                      |
 | `js/terminal.js`   | the shell and its commands                                               |
 | `js/sysmon.js`     | the live graphs and clocks                                               |

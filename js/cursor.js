@@ -4,7 +4,7 @@
   const dot = document.querySelector(".cursor-dot");
   const ring = document.querySelector(".cursor-ring");
   const root = document.documentElement;
-  const CLICKABLE = "a, button, select, label, [data-open], .titlebar, .resize, .square, #flappy-canvas";
+  const CLICKABLE = "a, button, select, label, [data-open], .titlebar, .resize, .square, .critter, #flappy-canvas";
   const pos = { x: -100, y: -100 };
   const trail = { x: -100, y: -100 };
   let frameId = 0;
