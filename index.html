@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>gilOS</title>
+  <meta name="description" content="gil's corner of the internet.">
+  <meta name="theme-color" content="#0b0618">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Silkscreen&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="stars" aria-hidden="true"></canvas>
+  <div class="nebula" aria-hidden="true"></div>
+
+  <!-- icons, drawn once and reused with <use href="#..."> -->
+  <svg class="sprite" aria-hidden="true" focusable="false">
+    <defs>
+      <linearGradient id="grad" gradientUnits="userSpaceOnUse" x1="2" y1="2" x2="22" y2="22">
+        <stop offset="0" stop-color="#8f8cff"/>
+        <stop offset=".5" stop-color="#b07cff"/>
+        <stop offset="1" stop-color="#ec7cf5"/>
+      </linearGradient>
+    </defs>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="2.75" y="4" width="18.5" height="16" rx="2.5"/><path d="M7 9.5l3 2.5-3 2.5M12.5 15H17"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="3.75"/><path d="M4.75 20c1.1-3.8 3.9-5.75 7.25-5.75s6.15 1.95 7.25 5.75"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M6 2.75h8.25L19 7.5v13.75H6z"/><path d="M14 3v4.75h4.75M9 12h7M9 15.5h7M9 19h4"/></symbol>
+    <symbol id="i-ban" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M6 6l12 12"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></symbol>
+    <symbol id="i-external" viewBox="0 0 24 24"><path d="M14 4.5h5.5V10M19.5 4.5L11 13M17 14v5.5H4.5V7H10"/></symbol>
+    <symbol id="i-power" viewBox="0 0 24 24"><path d="M12 3.5v8"/><path d="M7 6.5a7.5 7.5 0 1 0 10 0"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z"/><path d="M15.5 9a4.2 4.2 0 0 1 0 6M18 6.5a7.8 7.8 0 0 1 0 11"/></symbol>
+    <symbol id="i-min" viewBox="0 0 24 24"><path d="M6 17h12"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5.5" width="4" height="13" rx="1" fill="currentColor" stroke="none"/><rect x="13.5" y="5.5" width="4" height="13" rx="1" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6.5" y="6.5" width="11" height="11" rx="1.5" fill="currentColor" stroke="none"/></symbol>
+  </svg>
+
+  <!-- boot screen -->
+  <div class="boot" id="boot" aria-hidden="true">
+    <div class="boot-inner">
+      <pre class="boot-logo"> ██████╗ ██╗██╗
+██╔════╝ ██║██║
+██║  ███╗██║██║
+██║   ██║██║██║
+╚██████╔╝██║███████╗
+ ╚═════╝ ╚═╝╚══════╝</pre>
+      <div class="boot-log" id="boot-log"></div>
+      <p class="boot-skip">click or press any key to skip</p>
+    </div>
+  </div>
+
+  <main id="desktop">
+    <nav class="icons" aria-label="desktop shortcuts">
+      <button type="button" class="icon" data-open="profile"><span class="icon-tile"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg></span><span class="icon-label">profile<wbr>.exe</span></button>
+      <button type="button" class="icon" data-open="terminal"><span class="icon-tile"><svg class="ico" aria-hidden="true"><use href="#i-terminal"/></svg></span><span class="icon-label">terminal</span></button>
+      <button type="button" class="icon" data-open="about"><span class="icon-tile"><svg class="ico" aria-hidden="true"><use href="#i-file"/></svg></span><span class="icon-label">about_me<wbr>.txt</span></button>
+      <button type="button" class="icon" data-open="dni"><span class="icon-tile"><svg class="ico" aria-hidden="true"><use href="#i-ban"/></svg></span><span class="icon-label">dni<wbr>.txt</span></button>
+      <button type="button" class="icon" data-open="music"><span class="icon-tile"><svg class="ico" aria-hidden="true"><use href="#i-music"/></svg></span><span class="icon-label">music<wbr>.exe</span></button>
+    </nav>
+
+    <!-- profile.exe -->
+    <section class="window" data-app="profile" data-title="profile.exe" data-icon="i-user" aria-labelledby="t-profile" hidden>
+      <header class="titlebar">
+        <svg class="ico" aria-hidden="true"><use href="#i-user"/></svg>
+        <h2 class="titlebar-title" id="t-profile">profile.exe</h2>
+        <div class="titlebar-btns">
+          <button type="button" class="tb tb-min" aria-label="minimize profile.exe"><svg class="ico" aria-hidden="true"><use href="#i-min"/></svg></button>
+          <button type="button" class="tb tb-close" aria-label="close profile.exe"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+        </div>
+      </header>
+      <div class="window-body profile">
+        <div class="banner" aria-hidden="true">
+          <span class="banner-code">$ whoami<br><span data-tpl="{name}">gil</span></span>
+          <span class="banner-tag" data-tpl="/home/{name}">/home/gil</span>
+        </div>
+        <div class="profile-head">
+          <div class="avatar-ring"><img id="avatar" data-avatar src="assets/avatar.png" alt="gil's profile picture" width="96" height="96"></div>
+          <div class="profile-id">
+            <h1 class="profile-name" data-tpl="{name}">gil</h1>
+            <p class="profile-handle" data-tpl="{handle}">@gil</p>
+          </div>
+        </div>
+        <p class="status-pill"><span class="dot" aria-hidden="true"></span><span data-tpl="{status}">online</span></p>
+        <p class="welcome" data-tpl="{welcome}"></p>
+        <div class="profile-actions">
+          <button type="button" class="action" data-open="about"><svg class="ico" aria-hidden="true"><use href="#i-file"/></svg>about me</button>
+          <button type="button" class="action" data-open="dni"><svg class="ico" aria-hidden="true"><use href="#i-ban"/></svg>dni</button>
+          <button type="button" class="action" data-open="music"><svg class="ico" aria-hidden="true"><use href="#i-music"/></svg>music</button>
+          <button type="button" class="action" data-open="terminal"><svg class="ico" aria-hidden="true"><use href="#i-terminal"/></svg>terminal</button>
+        </div>
+        <div class="profile-links" id="profile-links" hidden></div>
+        <footer class="profile-foot">
+          <span>session <span class="js-uptime">00:00:00</span></span>
+          <span>made by <span data-tpl="{name}">gil</span> · <span class="js-year"></span></span>
+        </footer>
+      </div>
+    </section>
+
+    <!-- music.exe -->
+    <section class="window" data-app="music" data-title="music.exe" data-icon="i-music" aria-labelledby="t-music" hidden>
+      <header class="titlebar">
+        <svg class="ico" aria-hidden="true"><use href="#i-music"/></svg>
+        <h2 class="titlebar-title" id="t-music">music.exe</h2>
+        <div class="titlebar-btns">
+          <button type="button" class="tb tb-min" aria-label="minimize music.exe"><svg class="ico" aria-hidden="true"><use href="#i-min"/></svg></button>
+          <button type="button" class="tb tb-close" aria-label="close music.exe"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+        </div>
+      </header>
+      <div class="window-body music">
+        <div class="np">
+          <span class="np-label">now playing</span>
+          <span class="np-title" id="music-title"><span class="np-text">loading…</span></span>
+        </div>
+        <div class="yt-frame">
+          <div id="yt-player"></div>
+          <div class="yt-fallback" id="yt-fallback" hidden>
+            <p id="yt-fallback-msg">couldn't load the player.</p>
+            <a class="chip" id="music-link" href="https://www.youtube.com/" target="_blank" rel="noopener"><svg class="ico" aria-hidden="true"><use href="#i-external"/></svg><span>listen on youtube</span></a>
+          </div>
+        </div>
+        <div class="viz" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="seek">
+          <span id="music-pos">0:00</span>
+          <input type="range" id="music-seek" min="0" max="1000" value="0" aria-label="song position">
+          <span id="music-dur">0:00</span>
+        </div>
+        <div class="controls">
+          <button type="button" class="ctrl ctrl-main" id="music-toggle" aria-label="play music"><svg class="ico" aria-hidden="true"><use href="#i-play"/></svg><span class="label">play</span></button>
+          <button type="button" class="ctrl" id="music-stop" aria-label="stop music"><svg class="ico" aria-hidden="true"><use href="#i-stop"/></svg><span>stop</span></button>
+          <label class="vol"><svg class="ico" aria-hidden="true"><use href="#i-volume"/></svg><input type="range" id="music-vol" min="0" max="100" value="40" aria-label="volume"></label>
+        </div>
+        <p class="music-status" id="music-status" aria-live="polite">connecting to youtube…</p>
+      </div>
+    </section>
+
+    <!-- terminal -->
+    <section class="window" data-app="terminal" data-title="terminal" data-icon="i-terminal" aria-labelledby="t-terminal" hidden>
+      <header class="titlebar">
+        <svg class="ico" aria-hidden="true"><use href="#i-terminal"/></svg>
+        <h2 class="titlebar-title" id="t-terminal" data-tpl="{name}sh · visitor@{osName}">gilsh · visitor@gilOS</h2>
+        <div class="titlebar-btns">
+          <button type="button" class="tb tb-min" aria-label="minimize terminal"><svg class="ico" aria-hidden="true"><use href="#i-min"/></svg></button>
+          <button type="button" class="tb tb-close" aria-label="close terminal"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+        </div>
+      </header>
+      <div class="window-body term-body">
+        <div class="term">
+          <div class="term-out" id="term-out" role="log" aria-live="polite"></div>
+          <form class="term-line" id="term-form" autocomplete="off">
+            <label class="prompt" id="term-prompt" for="term-input">visitor@gilOS:~$</label>
+            <input id="term-input" type="text" spellcheck="false" autocapitalize="off" autocomplete="off" enterkeyhint="send" aria-label="type a command">
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- about_me.txt -->
+    <section class="window" data-app="about" data-title="about_me.txt" data-icon="i-file" aria-labelledby="t-about" hidden>
+      <header class="titlebar">
+        <svg class="ico" aria-hidden="true"><use href="#i-file"/></svg>
+        <h2 class="titlebar-title" id="t-about">about_me.txt</h2>
+        <div class="titlebar-btns">
+          <button type="button" class="tb tb-min" aria-label="minimize about_me.txt"><svg class="ico" aria-hidden="true"><use href="#i-min"/></svg></button>
+          <button type="button" class="tb tb-close" aria-label="close about_me.txt"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+        </div>
+      </header>
+      <div class="window-body editor">
+        <ol class="lines" id="about-lines"></ol>
+        <div class="statusbar"><span class="mode">read-only</span><span>utf-8</span><span>lf</span><span id="about-count"></span></div>
+      </div>
+    </section>
+
+    <!-- dni.txt -->
+    <section class="window" data-app="dni" data-title="dni.txt" data-icon="i-ban" aria-labelledby="t-dni" hidden>
+      <header class="titlebar">
+        <svg class="ico" aria-hidden="true"><use href="#i-ban"/></svg>
+        <h2 class="titlebar-title" id="t-dni">dni.txt</h2>
+        <div class="titlebar-btns">
+          <button type="button" class="tb tb-min" aria-label="minimize dni.txt"><svg class="ico" aria-hidden="true"><use href="#i-min"/></svg></button>
+          <button type="button" class="tb tb-close" aria-label="close dni.txt"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+        </div>
+      </header>
+      <div class="window-body editor">
+        <ol class="lines" id="dni-lines"></ol>
+        <div class="statusbar"><span class="mode">read-only</span><span>utf-8</span><span>lf</span><span id="dni-count"></span></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="taskbar">
+    <button type="button" class="start" id="start-btn" aria-haspopup="true" aria-expanded="false" aria-controls="start-menu">
+      <svg class="ico" aria-hidden="true"><use href="#i-terminal"/></svg><span data-tpl="{osName}">gilOS</span>
+    </button>
+    <div class="tasks" id="tasks"></div>
+    <button type="button" class="tray-music" id="tray-music" hidden>
+      <span class="mini-eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="t">music</span>
+    </button>
+    <time class="clock" id="clock"><span id="clock-time"></span><small id="clock-date"></small></time>
+  </footer>
+
+  <div class="start-menu" id="start-menu" hidden>
+    <div class="start-head">
+      <img data-avatar src="assets/avatar.png" alt="" width="34" height="34">
+      <div><b data-tpl="{name}">gil</b><span data-tpl="{handle}">@gil</span></div>
+    </div>
+    <button type="button" data-open="profile"><svg class="ico" aria-hidden="true"><use href="#i-user"/></svg>profile.exe</button>
+    <button type="button" data-open="terminal"><svg class="ico" aria-hidden="true"><use href="#i-terminal"/></svg>terminal</button>
+    <button type="button" data-open="about"><svg class="ico" aria-hidden="true"><use href="#i-file"/></svg>about_me.txt</button>
+    <button type="button" data-open="dni"><svg class="ico" aria-hidden="true"><use href="#i-ban"/></svg>dni.txt</button>
+    <button type="button" data-open="music"><svg class="ico" aria-hidden="true"><use href="#i-music"/></svg>music.exe</button>
+    <hr>
+    <button type="button" id="reboot"><svg class="ico" aria-hidden="true"><use href="#i-power"/></svg>reboot</button>
+  </div>
+
+  <noscript><p class="noscript">gilOS needs JavaScript to boot. turn it on and refresh the page.</p></noscript>
+
+  <script src="config.js"></script>
+  <script src="js/core.js"></script>
+  <script src="js/stars.js"></script>
+  <script src="js/music.js"></script>
+  <script src="js/terminal.js"></script>
+  <script src="js/desktop.js"></script>
+</body>
+</html>
