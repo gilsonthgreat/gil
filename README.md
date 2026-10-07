@@ -1,51 +1,54 @@
 # gilOS
 
-gil's personal site: a purple, terminal-style desktop that runs in the browser.
+gil's personal site: a purple, terminal-style desktop that runs in the browser. Plain HTML, CSS and JavaScript with no
+build step or dependencies.
 
 - **profile.exe**: avatar, status, welcome message and shortcuts
 - **terminal**: a small shell. Try `help`, `neofetch`, `cat about_me.txt`, `open dni`, `music pause`
 - **about_me.txt** and **dni.txt**: read-only text files
-- **music.exe**: plays a YouTube video with custom controls and loops it
+- **music.exe**: a YouTube video with custom controls, on repeat
 
-Windows can be dragged, minimized and closed, and the taskbar has a start menu and a clock. On phones the windows stack into one scrolling column.
+Windows can be dragged, minimized and closed, and the taskbar has a start menu and a clock. On phones the windows stack
+into one scrolling column.
 
-## Changing the text
+## Editing
 
-Everything you'd want to edit is in [`config.js`](config.js): your name, handle, status, welcome message, the about-me lines, the DNI list, links and the song. Keep the quotes and commas, save, and refresh.
+All the text lives in [`config.js`](config.js): name, handle, status, welcome message, the about-me lines, the DNI list,
+links and the song. To change the profile picture, replace `assets/avatar.png` with a square image.
 
-To change the profile picture, replace `assets/avatar.png` (a square image works best).
+The song is `music.youtubeId`, the part after `watch?v=` in a YouTube link. Browsers don't allow sound until a visitor
+clicks or presses a key, so it starts on their first click; set `playOnFirstClick: false` to wait for the play button
+instead. If the video's owner doesn't allow embedding, the player shows a "listen on youtube" link.
 
-## Changing the song
+## Running locally
 
-In `config.js`, set `music.youtubeId` to the part after `watch?v=` in a YouTube link. For example, `https://www.youtube.com/watch?v=d8_fZedifX0` becomes `"d8_fZedifX0"`.
-
-Browsers don't allow sound until a visitor clicks or presses a key, so the song starts on their first click. Set `playOnFirstClick: false` to make them press play instead. Some videos don't allow other sites to play them. If yours is one of those, the player shows a "listen on youtube" link instead.
-
-## Previewing on your computer
-
-The music needs the page to come from a web server, not a double-clicked file. From this folder, run:
+The YouTube player won't load from a double-clicked file, so serve the folder:
 
 ```sh
 npx serve .
 ```
 
-and open the address it prints.
+Formatting is Prettier with the settings in `.prettierrc.json`: `npx prettier --write .`
 
-## Putting it online with Netlify
+## Hosting
 
-1. On [netlify.com](https://app.netlify.com), choose **Add new site → Import an existing project → GitHub**, then pick this repository.
-2. Pick the branch the site is on. Leave the build command empty. The publish directory is already set to `.` in `netlify.toml`.
-3. Deploy. After that, every push to that branch updates the live site.
+Any static host works. Two free options:
 
-## Files
+- **GitHub Pages**: in the repository's Settings → Pages, deploy from the branch with the site, folder `/ (root)`. On a
+  free GitHub plan the repository has to be public.
+- **Netlify**: import the repository and leave the build command empty. `netlify.toml` sets the publish directory.
 
-| file | what it does |
-| --- | --- |
-| `config.js` | all the text and settings |
-| `index.html` | page structure: windows, taskbar, start menu |
-| `style.css` | colours, fonts and layout |
-| `js/desktop.js` | windows, taskbar, start menu, boot screen |
-| `js/terminal.js` | the terminal and its commands |
-| `js/music.js` | the YouTube player |
-| `js/stars.js` | the animated starfield |
-| `js/core.js` | small helpers shared by the scripts |
+## Layout
+
+| file             | what it does                                   |
+| ---------------- | ---------------------------------------------- |
+| `config.js`      | site text and settings                         |
+| `index.html`     | markup for the windows, taskbar and start menu |
+| `style.css`      | colours, fonts and layout                      |
+| `js/core.js`     | the `GIL` namespace: DOM helper, ASCII logo    |
+| `js/stars.js`    | the animated starfield                         |
+| `js/music.js`    | the YouTube player and its controls            |
+| `js/terminal.js` | the shell and its commands                     |
+| `js/desktop.js`  | window management, taskbar, start menu, boot   |
+
+Scripts are loaded in that order and share state through `window.GIL`.

@@ -1,20 +1,18 @@
-/* gilOS: a starfield desktop. glass windows float over a purple nebula, taskbar along the bottom */
 :root {
   color-scheme: dark;
 
-  /* palette: shades of purple, deepest to lightest, plus the two gradient ends */
-  --void: #07040f;      /* page ground */
-  --night: #0e0820;     /* deepest surface */
-  --grape: #2c1858;     /* hover and selected fills */
-  --indigo: #8f8cff;    /* cool end of the gradient */
-  --violet: #b07cff;    /* main accent */
-  --magenta: #ec7cf5;   /* hot end of the gradient */
-  --orchid: #cfaeff;    /* labels and keys */
-  --lilac: #e6dcff;     /* body text */
-  --mist: #f7f3ff;      /* brightest text */
-  --muted: #a194cc;     /* secondary text */
-  --faint: #7a6ca8;     /* line numbers, hints */
-  --alert: #ff9ade;     /* errors, kept pink so it sits in the palette */
+  --void: #07040f;
+  --night: #0e0820;
+  --grape: #2c1858;
+  --indigo: #8f8cff;
+  --violet: #b07cff;
+  --magenta: #ec7cf5;
+  --orchid: #cfaeff;
+  --lilac: #e6dcff;
+  --mist: #f7f3ff;
+  --muted: #a194cc;
+  --faint: #7a6ca8;
+  --alert: #ff9ade;
   --line: rgba(207, 174, 255, 0.2);
   --line-strong: rgba(207, 174, 255, 0.44);
   --glass: rgba(19, 11, 40, 0.8);
@@ -22,7 +20,6 @@
   --ink: rgba(7, 4, 16, 0.6);
   --grad: linear-gradient(100deg, var(--indigo), var(--violet) 48%, var(--magenta));
 
-  /* type: Silkscreen (pixel) for names and labels, JetBrains Mono for everything else */
   --font-pixel: "Silkscreen", "JetBrains Mono", ui-monospace, monospace;
   --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
 
@@ -96,8 +93,7 @@ a {
   flex: none;
 }
 
-.is-dragging,
-.is-dragging * {
+.is-dragging {
   user-select: none;
 }
 
@@ -105,7 +101,7 @@ a {
   pointer-events: none;
 }
 
-/* ---------- sky ---------- */
+/* sky */
 #stars {
   position: fixed;
   inset: 0;
@@ -134,7 +130,7 @@ a {
   }
 }
 
-/* ---------- desktop ---------- */
+/* desktop */
 #desktop {
   position: fixed;
   inset: 0 0 calc(var(--taskbar-h) + env(safe-area-inset-bottom, 0px));
@@ -170,8 +166,13 @@ a {
   border: 1px solid var(--line);
   border-radius: 12px;
   background: linear-gradient(160deg, rgba(52, 29, 102, 0.9), rgba(14, 8, 32, 0.9));
-  box-shadow: 0 8px 20px -8px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.07);
-  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  box-shadow:
+    0 8px 20px -8px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  transition:
+    transform 0.15s,
+    box-shadow 0.15s,
+    border-color 0.15s;
 }
 
 .icon-tile .ico {
@@ -196,10 +197,12 @@ a {
 .icon:focus-visible .icon-tile {
   transform: translateY(-1px);
   border-color: var(--line-strong);
-  box-shadow: 0 0 24px -4px rgba(176, 124, 255, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  box-shadow:
+    0 0 24px -4px rgba(176, 124, 255, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07);
 }
 
-/* ---------- windows ---------- */
+/* windows */
 .window {
   position: absolute;
   left: 0;
@@ -254,10 +257,18 @@ a {
   }
 }
 
-.window[data-app="profile"] { width: 340px; }
-.window[data-app="music"] { width: 360px; }
-.window[data-app="about"] { width: 440px; }
-.window[data-app="dni"] { width: 420px; }
+.window[data-app="profile"] {
+  width: 340px;
+}
+.window[data-app="music"] {
+  width: 360px;
+}
+.window[data-app="about"] {
+  width: 440px;
+}
+.window[data-app="dni"] {
+  width: 420px;
+}
 .window[data-app="terminal"] {
   width: 680px;
   height: 500px;
@@ -322,7 +333,10 @@ a {
   border-radius: 6px;
   background: rgba(7, 4, 16, 0.4);
   color: var(--muted);
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
 }
 
 .tb .ico {
@@ -353,11 +367,7 @@ a {
   scrollbar-color: var(--grape) transparent;
 }
 
-/* ---------- profile.exe ---------- */
-.profile {
-  padding-bottom: 0;
-}
-
+/* profile.exe */
 .banner {
   position: relative;
   height: 108px;
@@ -479,9 +489,15 @@ a {
 }
 
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(236, 124, 245, 0.6); }
-  70% { box-shadow: 0 0 0 7px rgba(236, 124, 245, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(236, 124, 245, 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(236, 124, 245, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(236, 124, 245, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(236, 124, 245, 0);
+  }
 }
 
 .welcome {
@@ -510,7 +526,11 @@ a {
   font-size: 12.5px;
   text-align: left;
   color: var(--lilac);
-  transition: transform 0.15s, border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  transition:
+    transform 0.15s,
+    border-color 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
 }
 
 .action .ico {
@@ -570,7 +590,7 @@ a {
   font-variant-numeric: tabular-nums;
 }
 
-/* ---------- music.exe ---------- */
+/* music.exe */
 .music {
   display: grid;
   gap: 12px;
@@ -606,9 +626,17 @@ a {
 }
 
 @keyframes marquee {
-  0%, 12% { transform: translateX(0); }
-  50%, 62% { transform: translateX(var(--shift, 0)); }
-  100% { transform: translateX(0); }
+  0%,
+  12% {
+    transform: translateX(0);
+  }
+  50%,
+  62% {
+    transform: translateX(var(--shift, 0));
+  }
+  100% {
+    transform: translateX(0);
+  }
 }
 
 .yt-frame {
@@ -617,9 +645,7 @@ a {
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 9px;
-  background:
-    radial-gradient(70% 90% at 50% 120%, rgba(176, 124, 255, 0.35), transparent 70%),
-    #05020c;
+  background: radial-gradient(70% 90% at 50% 120%, rgba(176, 124, 255, 0.35), transparent 70%), #05020c;
 }
 
 .yt-frame iframe {
@@ -662,7 +688,9 @@ a {
   opacity: 0.5;
   transform: scaleY(0.12);
   transform-origin: bottom;
-  transition: transform 0.4s, opacity 0.4s;
+  transition:
+    transform 0.4s,
+    opacity 0.4s;
 }
 
 .music.is-playing .viz span {
@@ -671,9 +699,15 @@ a {
 }
 
 @keyframes eq {
-  0% { transform: scaleY(0.15); }
-  50% { transform: scaleY(var(--peak, 0.8)); }
-  100% { transform: scaleY(0.3); }
+  0% {
+    transform: scaleY(0.15);
+  }
+  50% {
+    transform: scaleY(var(--peak, 0.8));
+  }
+  100% {
+    transform: scaleY(0.3);
+  }
 }
 
 .seek {
@@ -789,7 +823,9 @@ input[type="range"]::-webkit-slider-thumb {
   border: 0;
   border-radius: 50%;
   background: var(--mist);
-  box-shadow: 0 0 0 3px rgba(176, 124, 255, 0.35), 0 0 12px rgba(236, 124, 245, 0.6);
+  box-shadow:
+    0 0 0 3px rgba(176, 124, 255, 0.35),
+    0 0 12px rgba(236, 124, 245, 0.6);
   -webkit-appearance: none;
   appearance: none;
 }
@@ -800,7 +836,9 @@ input[type="range"]::-moz-range-thumb {
   border: 0;
   border-radius: 50%;
   background: var(--mist);
-  box-shadow: 0 0 0 3px rgba(176, 124, 255, 0.35), 0 0 12px rgba(236, 124, 245, 0.6);
+  box-shadow:
+    0 0 0 3px rgba(176, 124, 255, 0.35),
+    0 0 12px rgba(236, 124, 245, 0.6);
 }
 
 input[type="range"]:disabled {
@@ -808,7 +846,7 @@ input[type="range"]:disabled {
   opacity: 0.5;
 }
 
-/* ---------- terminal ---------- */
+/* terminal */
 .term-body {
   display: flex;
   max-height: none;
@@ -875,19 +913,43 @@ input[type="range"]:disabled {
 }
 
 @keyframes blink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
-.t-user { color: var(--orchid); font-weight: 700; }
-.t-host { color: var(--violet); font-weight: 700; }
-.t-path { color: var(--indigo); }
-.t-dim { color: var(--muted); }
-.t-faint { color: var(--faint); }
-.t-key { color: var(--orchid); }
-.t-val { color: var(--mist); }
-.t-hl { color: var(--magenta); }
-.t-err { color: var(--alert); }
-.t-box { color: rgba(176, 124, 255, 0.6); }
+.t-user {
+  color: var(--orchid);
+  font-weight: 700;
+}
+.t-host {
+  color: var(--violet);
+  font-weight: 700;
+}
+.t-path {
+  color: var(--indigo);
+}
+.t-dim {
+  color: var(--muted);
+}
+.t-faint {
+  color: var(--faint);
+}
+.t-key {
+  color: var(--orchid);
+}
+.t-val {
+  color: var(--mist);
+}
+.t-hl {
+  color: var(--magenta);
+}
+.t-err {
+  color: var(--alert);
+}
+.t-box {
+  color: rgba(176, 124, 255, 0.6);
+}
 
 .fetch {
   display: grid;
@@ -909,8 +971,8 @@ input[type="range"]:disabled {
   filter: drop-shadow(0 0 10px rgba(176, 124, 255, 0.45));
 }
 
-/* a row inside a neofetch box: long values wrap under themselves, not under the label */
-.fr {
+/* long values wrap under themselves, not under the label */
+.fetch-row {
   display: grid;
   grid-template-columns: 2ch 9ch minmax(0, 1fr);
 }
@@ -919,14 +981,30 @@ input[type="range"]:disabled {
   letter-spacing: 0.15ch;
 }
 
-.sw-1 { color: #3b1d7a; }
-.sw-2 { color: #5b2bb0; }
-.sw-3 { color: #7a45e0; }
-.sw-4 { color: var(--indigo); }
-.sw-5 { color: var(--violet); }
-.sw-6 { color: var(--orchid); }
-.sw-7 { color: var(--magenta); }
-.sw-8 { color: var(--lilac); }
+.sw-1 {
+  color: #3b1d7a;
+}
+.sw-2 {
+  color: #5b2bb0;
+}
+.sw-3 {
+  color: #7a45e0;
+}
+.sw-4 {
+  color: var(--indigo);
+}
+.sw-5 {
+  color: var(--violet);
+}
+.sw-6 {
+  color: var(--orchid);
+}
+.sw-7 {
+  color: var(--magenta);
+}
+.sw-8 {
+  color: var(--lilac);
+}
 
 @container (max-width: 540px) {
   .fetch {
@@ -934,7 +1012,7 @@ input[type="range"]:disabled {
   }
 }
 
-/* ---------- about_me.txt and dni.txt ---------- */
+/* about_me.txt and dni.txt */
 .editor {
   display: flex;
   flex-direction: column;
@@ -971,11 +1049,23 @@ input[type="range"]:disabled {
   background: rgba(176, 124, 255, 0.07);
 }
 
-.e-h { color: var(--violet); font-weight: 500; }
-.e-p { color: var(--lilac); text-wrap: pretty; }
-.e-dim { color: var(--muted); }
-.e-k { color: var(--orchid); }
-.e-v { color: var(--mist); }
+.e-h {
+  color: var(--violet);
+  font-weight: 500;
+}
+.e-p {
+  color: var(--lilac);
+  text-wrap: pretty;
+}
+.e-dim {
+  color: var(--muted);
+}
+.e-k {
+  color: var(--orchid);
+}
+.e-v {
+  color: var(--mist);
+}
 
 .e-kv {
   display: grid;
@@ -1018,7 +1108,7 @@ input[type="range"]:disabled {
   color: #1a0b33;
 }
 
-/* ---------- taskbar ---------- */
+/* taskbar */
 .taskbar {
   position: fixed;
   left: 0;
@@ -1192,9 +1282,18 @@ input[type="range"]:disabled {
   animation: eq 0.8s ease-in-out infinite alternate;
 }
 
-.music-on .mini-eq i:nth-child(2) { animation-duration: 0.6s; animation-delay: -0.3s; }
-.music-on .mini-eq i:nth-child(3) { animation-duration: 0.9s; animation-delay: -0.5s; }
-.music-on .mini-eq i:nth-child(4) { animation-duration: 0.7s; animation-delay: -0.2s; }
+.music-on .mini-eq i:nth-child(2) {
+  animation-duration: 0.6s;
+  animation-delay: -0.3s;
+}
+.music-on .mini-eq i:nth-child(3) {
+  animation-duration: 0.9s;
+  animation-delay: -0.5s;
+}
+.music-on .mini-eq i:nth-child(4) {
+  animation-duration: 0.7s;
+  animation-delay: -0.2s;
+}
 
 .clock {
   display: grid;
@@ -1212,7 +1311,7 @@ input[type="range"]:disabled {
   color: var(--muted);
 }
 
-/* ---------- start menu ---------- */
+/* start menu */
 .start-menu {
   position: fixed;
   left: 10px;
@@ -1225,7 +1324,9 @@ input[type="range"]:disabled {
   border: 1px solid var(--line-strong);
   border-radius: 12px;
   background: var(--glass);
-  box-shadow: 0 24px 60px -16px rgba(0, 0, 0, 0.8), 0 0 50px -12px rgba(176, 124, 255, 0.45);
+  box-shadow:
+    0 24px 60px -16px rgba(0, 0, 0, 0.8),
+    0 0 50px -12px rgba(176, 124, 255, 0.45);
   -webkit-backdrop-filter: blur(18px) saturate(1.3);
   backdrop-filter: blur(18px) saturate(1.3);
 }
@@ -1293,7 +1394,7 @@ input[type="range"]:disabled {
   border-top: 1px solid var(--line);
 }
 
-/* ---------- boot screen ---------- */
+/* boot screen */
 .boot {
   position: fixed;
   inset: 0;
@@ -1303,7 +1404,9 @@ input[type="range"]:disabled {
   padding: 24px 16px;
   background: radial-gradient(120% 90% at 50% 0%, #1b0c3a, var(--void) 70%);
   cursor: pointer;
-  transition: opacity 0.45s ease, visibility 0.45s;
+  transition:
+    opacity 0.45s ease,
+    visibility 0.45s;
 }
 
 .boot.is-done {
@@ -1341,9 +1444,16 @@ input[type="range"]:disabled {
   min-height: 1.6em;
 }
 
-.boot-log .ok { color: var(--violet); font-weight: 700; }
-.boot-log .dim { color: var(--muted); }
-.boot-log .hi { color: var(--magenta); }
+.boot-log .ok {
+  color: var(--violet);
+  font-weight: 700;
+}
+.boot-log .dim {
+  color: var(--muted);
+}
+.boot-log .hi {
+  color: var(--magenta);
+}
 
 .boot-skip {
   margin: 0;
@@ -1359,7 +1469,7 @@ input[type="range"]:disabled {
   color: var(--lilac);
 }
 
-/* ---------- phones and small tablets: windows stack in one scrolling column ---------- */
+/* phones: windows stack in one scrolling column */
 @media (max-width: 760px) {
   body {
     overflow-x: hidden;

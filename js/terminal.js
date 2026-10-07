@@ -1,78 +1,93 @@
-/* terminal: a tiny shell with neofetch, files and music controls */
 (() => {
-  const { site, el, util, on, reduceMotion } = GIL;
+  const { site, el, span } = GIL;
   const out = document.getElementById("term-out");
   const form = document.getElementById("term-form");
   const input = document.getElementById("term-input");
-  const term = document.querySelector(".term");
-  if (!out || !form || !input) return;
 
   const USER = "visitor";
-  const HOST = site.osName;
   const SHELL = `${site.name}sh`;
-  const history = [];
+  const apps = {
+    profile: "profile.exe",
+    about: "about_me.txt",
+    dni: "dni.txt",
+    music: "music.exe",
+    terminal: "terminal",
+  };
+  const files = ["about_me.txt", "dni.txt", "music.exe", "profile.exe"];
+  const commandHistory = [];
   let historyIndex = 0;
   let busy = false;
-  let started = false;
   let machine = null;
 
-  const own = (obj, key) => (Object.prototype.hasOwnProperty.call(obj, key) ? obj[key] : undefined);
-  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+  // parts are nodes, strings, or [text, className] pairs
+  function line(...parts) {
+    return el(
+      "div",
+      { class: "ln" },
+      parts.map((p) => (Array.isArray(p) ? span(...p) : p)),
+    );
+  }
 
-  /* ---------- output ---------- */
-  const seg = (text, cls) => el("span", { class: cls, text });
   function print(...parts) {
-    const line = el("div", { class: "ln" }, parts.map((p) => (Array.isArray(p) ? seg(p[0], p[1]) : p)));
-    out.append(line);
-    return line;
+    return out.appendChild(line(...parts));
   }
-  function promptParts() {
-    return [seg(USER, "t-user"), seg("@", "t-dim"), seg(HOST, "t-host"), seg(":", "t-dim"), seg("~", "t-path"), seg("$", "t-dim")];
+
+  function prompt() {
+    return [
+      span(USER, "t-user"),
+      span("@", "t-dim"),
+      span(site.osName, "t-host"),
+      span(":", "t-dim"),
+      span("~", "t-path"),
+      span("$", "t-dim"),
+    ];
   }
+
   function echo(text) {
-    print(...promptParts(), " ", seg(text, "t-val"));
+    print(...prompt(), " ", span(text, "t-val"));
   }
+
   function scrollDown() {
     out.scrollTop = out.scrollHeight;
   }
 
-  /* ---------- apps and files ---------- */
-  const apps = { profile: "profile.exe", about: "about_me.txt", dni: "dni.txt", music: "music.exe", terminal: "terminal" };
-  const files = ["about_me.txt", "dni.txt", "music.exe", "profile.exe"];
-
-  function appId(name = "") {
+  function appId(name) {
     const n = name.toLowerCase().replace(/\.(exe|txt)$/, "");
-    if (n === "about_me" || n === "aboutme") return "about";
-    if (n === "term" || n === "shell" || n === SHELL) return "terminal";
-    return own(apps, n) ? n : null;
+    if (n === "about_me") return "about";
+    if (n === "term" || n === SHELL) return "terminal";
+    return Object.hasOwn(apps, n) ? n : null;
   }
 
-  /* ---------- machine info (read locally, never sent anywhere) ---------- */
-  function detect() {
+  // Everything below is read in the visitor's browser for display only; nothing is sent anywhere.
+  function detectMachine() {
     const ua = navigator.userAgent;
-    const platform = (navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || "";
+    const platform = navigator.userAgentData?.platform || navigator.platform || "";
     let os = "unknown";
     if (/android/i.test(ua)) os = "Android";
-    else if (/iphone|ipad|ipod/i.test(ua) || (/mac/i.test(platform) && navigator.maxTouchPoints > 1)) os = "iOS / iPadOS";
+    // iPadOS reports itself as a Mac, but Macs don't have touch screens
+    else if (/iphone|ipad|ipod/i.test(ua) || (/mac/i.test(platform) && navigator.maxTouchPoints > 1))
+      os = "iOS / iPadOS";
     else if (/win/i.test(platform) || /windows/i.test(ua)) os = "Windows";
     else if (/mac/i.test(platform)) os = "macOS";
     else if (/cros/i.test(ua)) os = "ChromeOS";
     else if (/linux/i.test(platform) || /linux/i.test(ua)) os = "Linux";
 
-    const version = (re) => (ua.match(re) || [])[1];
-    let browser = "unknown";
-    if (version(/Edg\/(\d+)/)) browser = `Edge ${version(/Edg\/(\d+)/)}`;
-    else if (version(/OPR\/(\d+)/)) browser = `Opera ${version(/OPR\/(\d+)/)}`;
-    else if (version(/Firefox\/(\d+)/)) browser = `Firefox ${version(/Firefox\/(\d+)/)}`;
-    else if (version(/Chrome\/(\d+)/)) browser = `Chrome ${version(/Chrome\/(\d+)/)}`;
-    else if (version(/Version\/(\d+)[\d.]* .*Safari/)) browser = `Safari ${version(/Version\/(\d+)/)}`;
+    // order matters: Edge and Opera user agents also contain "Chrome"
+    const browsers = [
+      ["Edge", /Edg\/(\d+)/],
+      ["Opera", /OPR\/(\d+)/],
+      ["Firefox", /Firefox\/(\d+)/],
+      ["Chrome", /Chrome\/(\d+)/],
+      ["Safari", /Version\/(\d+).*Safari/],
+    ];
+    const found = browsers.find(([, pattern]) => pattern.test(ua));
 
     const threads = navigator.hardwareConcurrency;
-    const memory = navigator.deviceMemory;
+    const memory = navigator.deviceMemory; // Chrome caps this at 8
     const dpr = window.devicePixelRatio || 1;
     return {
       os,
-      browser,
+      browser: found ? `${found[0]} ${ua.match(found[1])[1]}` : "unknown",
       cpu: threads ? `${threads} threads` : "n/a",
       gpu: detectGpu(),
       memory: memory ? (memory >= 8 ? "8+ GiB" : `${memory} GiB`) : "n/a",
@@ -82,79 +97,69 @@
 
   function detectGpu() {
     try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      const gl = document.createElement("canvas").getContext("webgl");
       if (!gl) return "n/a";
       const ext = gl.getExtension("WEBGL_debug_renderer_info");
-      const raw = ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
-      const lose = gl.getExtension("WEBGL_lose_context");
-      if (lose) lose.loseContext();
-      return cleanGpu(raw) || "n/a";
+      const name = gl.getParameter(ext ? ext.UNMASKED_RENDERER_WEBGL : gl.RENDERER);
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return cleanGpuName(name) || "n/a";
     } catch {
       return "n/a";
     }
   }
 
-  function cleanGpu(raw) {
-    if (!raw) return "";
-    let s = String(raw);
-    const angle = s.match(/^ANGLE \((.*)\)$/);
+  // Chrome wraps the name, e.g. "ANGLE (NVIDIA, NVIDIA GeForce RTX 3060 (0x00002504) Direct3D11 vs_5_0 ps_5_0, D3D11)"
+  function cleanGpuName(raw) {
+    let name = String(raw || "");
+    const angle = name.match(/^ANGLE \((.*)\)$/);
     if (angle) {
       const parts = angle[1].split(", ");
-      s = parts.length > 1 ? parts[1] : parts[0];
+      name = parts[1] || parts[0];
     }
-    s = s
+    name = name
       .replace(/^ANGLE Metal Renderer:\s*/i, "")
       .replace(/\s*\(0x[0-9a-f]+\)/gi, "")
       .replace(/\s+Direct3D.*$/i, "")
       .replace(/\/PCIe\/SSE2/i, "")
       .replace(/, or similar$/i, "")
       .trim();
-    return s.length > 40 ? `${s.slice(0, 39)}…` : s;
+    return name.length > 40 ? `${name.slice(0, 39)}…` : name;
   }
 
-  /* ---------- commands ---------- */
-  function nowPlaying(m) {
-    if (!m || !m.state) return "…";
-    if (m.state === "error") return "unavailable";
-    const title = m.title || "loading…";
-    const text = `♪ ${title.length > 32 ? `${title.slice(0, 31)}…` : title}`;
-    return m.state === "playing" ? text : `${text} (${m.state})`;
+  function nowPlaying({ state, title }) {
+    if (state === "error") return "unavailable";
+    const name = title || "loading…";
+    const text = `♪ ${name.length > 32 ? `${name.slice(0, 31)}…` : name}`;
+    return state === "playing" ? text : `${text} (${state})`;
   }
 
   function neofetch() {
-    machine = machine || detect();
-    const width = 30;
+    machine ??= detectMachine();
+    const inner = 28;
     const box = (title, rows) => {
-      const inner = width - 2;
       const label = ` ${title} `;
       const left = Math.max(1, Math.floor((inner - label.length) / 2));
       const right = Math.max(1, inner - label.length - left);
       return [
-        el("div", { class: "ln" }, [seg(`╭${"─".repeat(left)}`, "t-box"), seg(label, "t-hl"), seg(`${"─".repeat(right)}╮`, "t-box")]),
+        line(span(`╭${"─".repeat(left)}`, "t-box"), span(label, "t-hl"), span(`${"─".repeat(right)}╮`, "t-box")),
         ...rows.map(([key, value]) =>
-          el("div", { class: "ln fr" }, [seg("├ ", "t-box"), seg(key, "t-key"), typeof value === "string" ? seg(value, "t-val") : value]),
+          el("div", { class: "ln fetch-row" }, [
+            span("├ ", "t-box"),
+            span(key, "t-key"),
+            typeof value === "string" ? span(value, "t-val") : value,
+          ]),
         ),
-        el("div", { class: "ln" }, [seg(`╰${"─".repeat(inner)}╯`, "t-box")]),
+        line(span(`╰${"─".repeat(inner)}╯`, "t-box")),
       ];
     };
 
-    const status = el("span", { class: "t-val" }, [seg("● ", "t-hl"), site.status || "online"]);
-    const music = el("span", { class: "t-val js-np", text: nowPlaying(GIL.music && GIL.music.info()) });
-    const uptime = el("span", { class: "t-val js-uptime-long", text: util.uptime(Date.now() - GIL.bootTime) });
-    const swatches = el(
-      "div",
-      { class: "ln swatches", "aria-hidden": "true" },
-      Array.from({ length: 8 }, (_, i) => seg("● ", `sw sw-${i + 1}`)),
-    );
-
     const info = el("div", { class: "fetch-info" }, [
-      el("div", { class: "ln" }, [seg("hey, ", "t-dim"), seg(USER, "t-user"), seg(" :)", "t-dim")]),
+      line(span("hey, ", "t-dim"), span(USER, "t-user"), span(" :)", "t-dim")),
       ...box(site.name, [
         ["user", `${site.name} (${site.handle})`],
-        ["status", status],
-        ["music", music],
-        ["uptime", uptime],
+        ["status", el("span", { class: "t-val" }, [span("● ", "t-hl"), site.status])],
+        ["music", span(nowPlaying(GIL.music.info()), "t-val js-np")],
+        ["uptime", span(GIL.formatUptime(Date.now() - GIL.bootTime), "t-val js-uptime-long")],
       ]),
       ...box("your machine", [
         ["os", machine.os],
@@ -164,103 +169,125 @@
         ["memory", machine.memory],
         ["screen", machine.screen],
       ]),
-      swatches,
+      el(
+        "div",
+        { class: "ln swatches", "aria-hidden": "true" },
+        Array.from({ length: 8 }, (_, i) => span("● ", `sw-${i + 1}`)),
+      ),
     ]);
-    out.append(el("div", { class: "fetch" }, [el("pre", { class: "fetch-logo", "aria-hidden": "true", text: GIL.logo }), info]));
+    out.append(
+      el("div", { class: "fetch" }, [el("pre", { class: "fetch-logo", "aria-hidden": "true", text: GIL.logo }), info]),
+    );
     print(["your machine info is read by your own browser and never leaves it.", "t-faint"]);
   }
 
   function help() {
     print(["commands", "t-hl"]);
     for (const [name, cmd] of Object.entries(commands)) {
-      if (cmd.hidden) continue;
-      const usage = cmd.args ? `${name} ${cmd.args}` : name;
-      print([`  ${usage.padEnd(30)}`, "t-key"], [cmd.desc, "t-dim"]);
+      print([`  ${`${name} ${cmd.args || ""}`.trim().padEnd(30)}`, "t-key"], [cmd.desc, "t-dim"]);
     }
     print(["tab completes a command. ↑ and ↓ go through history.", "t-faint"]);
   }
 
   function ls() {
-    print(...files.flatMap((f, i) => [seg(f, f.endsWith(".exe") ? "t-hl" : "t-key"), i < files.length - 1 ? "   " : ""]));
+    print(
+      ...files.flatMap((file, i) => [
+        span(file, file.endsWith(".exe") ? "t-hl" : "t-key"),
+        i < files.length - 1 ? "   " : "",
+      ]),
+    );
   }
 
-  function cat(args) {
-    const arg = (args[0] || "").toLowerCase();
-    if (!arg) return print(["usage: cat <file>. try ", "t-dim"], ["cat about_me.txt", "t-key"]);
-    const name = arg === "about" || arg === "about_me" ? "about_me.txt" : arg === "dni" ? "dni.txt" : arg;
-    const build = GIL.files && own(GIL.files, name);
-    if (build) {
-      build().forEach((row) => print(...row));
-      return;
-    }
-    if (files.includes(name)) return print([`cat: ${name} is a program. run `, "t-dim"], [`open ${name.replace(/\.exe$/, "")}`, "t-key"], [" instead.", "t-dim"]);
-    print([`cat: ${args[0]}: no such file`, "t-err"]);
+  function cat([name]) {
+    if (!name) return print(["usage: cat <file>. try ", "t-dim"], ["cat about_me.txt", "t-key"]);
+    const id = appId(name);
+    const file = id && apps[id];
+    if (GIL.files[file]) return GIL.files[file]().forEach((row) => print(...row));
+    if (file)
+      return print([`cat: ${file} is a program. run `, "t-dim"], [`open ${id}`, "t-key"], [" instead.", "t-dim"]);
+    print([`cat: ${name}: no such file`, "t-err"]);
   }
 
-  function openApp(args) {
-    if (!args[0]) return print(["usage: open <app>. apps: profile, about, dni, music, terminal", "t-dim"]);
-    const id = appId(args[0]);
-    if (!id) return print([`open: ${args[0]}: no such app`, "t-err"]);
+  function open([name]) {
+    if (!name) return print(["usage: open <app>. apps: profile, about, dni, music, terminal", "t-dim"]);
+    const id = appId(name);
+    if (!id) return print([`open: ${name}: no such app`, "t-err"]);
     print([`opening ${apps[id]}…`, "t-dim"]);
-    if (GIL.desktop) GIL.desktop.open(id);
+    GIL.desktop.open(id);
   }
 
-  function music(args) {
+  function music([action, value]) {
     const player = GIL.music;
-    if (!player) return print(["music.exe isn't running", "t-err"]);
-    const [sub, value] = args.map((a) => a.toLowerCase());
-    const info = player.info();
-    if (!sub || sub === "status") {
-      print(["♪ ", "t-hl"], [info.title || "unknown", "t-val"], [`  ${info.state} · volume ${info.volume}`, "t-dim"]);
-      if (info.error) print([info.error, "t-err"]);
-      return print(["usage: music [play|pause|stop|vol 0-100]", "t-faint"]);
+    const { state, title, error, volume } = player.info();
+    switch (action?.toLowerCase()) {
+      case undefined:
+      case "status":
+        print(["♪ ", "t-hl"], [title || "unknown", "t-val"], [`  ${state} · volume ${volume}`, "t-dim"]);
+        if (error) print([error, "t-err"]);
+        return print(["usage: music [play|pause|stop|vol 0-100]", "t-faint"]);
+      case "play":
+        return player.play() ? print(["▶ playing", "t-dim"]) : print([error || "music can't play right now", "t-err"]);
+      case "pause":
+        player.pause();
+        return print(["❚❚ paused", "t-dim"]);
+      case "stop":
+        player.stop();
+        return print(["■ stopped", "t-dim"]);
+      case "vol":
+      case "volume":
+        if (value === undefined || !Number.isFinite(Number(value))) {
+          return print([`volume is ${volume}. change it with `, "t-dim"], ["music vol 0-100", "t-key"]);
+        }
+        player.setVolume(value);
+        return print([`volume set to ${player.info().volume}`, "t-dim"]);
+      default:
+        print([`music: unknown option "${action}"`, "t-err"]);
     }
-    if (sub === "play") {
-      if (player.play()) return print(["▶ playing", "t-dim"]);
-      return print([info.error || "music can't play right now", "t-err"]);
-    }
-    if (sub === "pause") {
-      player.pause();
-      return print(["❚❚ paused", "t-dim"]);
-    }
-    if (sub === "stop") {
-      player.stop();
-      return print(["■ stopped", "t-dim"]);
-    }
-    if (sub === "vol" || sub === "volume") {
-      const n = Number(value);
-      if (value === undefined || !Number.isFinite(n)) return print([`volume is ${info.volume}. change it with `, "t-dim"], ["music vol 0-100", "t-key"]);
-      player.setVolume(n);
-      return print([`volume set to ${player.info().volume}`, "t-dim"]);
-    }
-    print([`music: unknown option "${sub}"`, "t-err"]);
   }
 
   function links() {
-    for (const link of site.links || []) {
-      print([`  ${String(link.label).padEnd(12)}`, "t-key"], el("a", { href: link.url, target: "_blank", rel: "noopener", text: link.url }));
+    for (const link of site.links) {
+      print(
+        [`  ${link.label.padEnd(12)}`, "t-key"],
+        el("a", { href: link.url, target: "_blank", rel: "noopener", text: link.url }),
+      );
     }
   }
 
   const commands = {
     help: { desc: "list commands", run: help },
-    neofetch: { desc: "system info: gil + your machine", run: neofetch },
+    neofetch: { desc: `system info: ${site.name} + your machine`, run: neofetch },
     about: { desc: "print about_me.txt", run: () => cat(["about_me.txt"]) },
     dni: { desc: "print dni.txt", run: () => cat(["dni.txt"]) },
     ls: { desc: "list files", run: ls },
     cat: { args: "<file>", desc: "print a file", run: cat },
-    open: { args: "<app>", desc: "open a window", run: openApp },
+    open: { args: "<app>", desc: "open a window", run: open },
     music: { args: "[play|pause|stop|vol n]", desc: "control the music", run: music },
-    links: { desc: `${site.name}'s links`, run: links, hidden: !(site.links && site.links.length) },
-    whoami: { desc: "who are you?", run: () => print([USER, "t-val"], ["  (a guest on ", "t-dim"], [`${site.name}'s machine`, "t-key"], [")", "t-dim"]) },
+    links: { desc: `${site.name}'s links`, run: links },
+    whoami: {
+      desc: "who are you?",
+      run: () =>
+        print([USER, "t-val"], ["  (a guest on ", "t-dim"], [`${site.name}'s machine`, "t-key"], [")", "t-dim"]),
+    },
     date: { desc: "date and time", run: () => print([new Date().toString(), "t-val"]) },
     echo: { args: "<text>", desc: "print text", run: (args) => print([args.join(" "), "t-val"]) },
-    history: { desc: "commands you've run", run: () => history.forEach((h, i) => print([`${String(i + 1).padStart(4)}  `, "t-faint"], [h, "t-val"])) },
+    history: {
+      desc: "commands you've run",
+      run: () =>
+        commandHistory.forEach((cmd, i) => print([`${String(i + 1).padStart(4)}  `, "t-faint"], [cmd, "t-val"])),
+    },
     clear: { desc: "clear the screen (ctrl+l)", run: () => out.replaceChildren() },
-    exit: { desc: "close the terminal", run: () => GIL.desktop && GIL.desktop.close("terminal") },
+    exit: { desc: "close the terminal", run: () => GIL.desktop.close("terminal") },
   };
-  const aliases = { fastfetch: "neofetch", fetch: "neofetch", cls: "clear", dir: "ls", "?": "help" };
-  const extras = {
+  if (!site.links.length) delete commands.links;
+
+  // aliases and easter eggs, left out of help and tab completion
+  const unlisted = {
+    fastfetch: neofetch,
+    fetch: neofetch,
+    cls: commands.clear.run,
+    dir: ls,
+    "?": help,
     play: () => music(["play"]),
     pause: () => music(["pause"]),
     stop: () => music(["stop"]),
@@ -277,44 +304,43 @@
     const line = raw.trim();
     echo(raw);
     if (line) {
-      history.push(line);
+      commandHistory.push(line);
       const [name, ...args] = line.split(/\s+/);
       const key = name.toLowerCase();
-      const cmd = own(commands, key) || own(commands, own(aliases, key) || "");
-      const extra = own(extras, key);
-      if (cmd) cmd.run(args);
-      else if (extra) extra(args);
-      else {
+      // hasOwn so input like "constructor" doesn't resolve to Object.prototype
+      const command = Object.hasOwn(commands, key) ? commands[key].run : Object.hasOwn(unlisted, key) && unlisted[key];
+      if (command) {
+        command(args);
+      } else {
         print([`${SHELL}: command not found: ${name}`, "t-err"]);
         print(["type ", "t-dim"], ["help", "t-key"], [" to see what's here.", "t-dim"]);
       }
     }
-    historyIndex = history.length;
+    historyIndex = commandHistory.length;
     scrollDown();
   }
 
   function complete() {
-    const value = input.value;
-    const parts = value.split(" ");
-    const last = parts[parts.length - 1].toLowerCase();
-    let pool;
-    if (parts.length === 1) pool = Object.keys(commands).filter((k) => !commands[k].hidden);
-    else if (parts[0] === "cat") pool = files.filter((f) => f.endsWith(".txt"));
-    else if (parts[0] === "open") pool = Object.keys(apps);
-    else if (parts[0] === "music") pool = ["play", "pause", "stop", "vol"];
-    else return;
-    const hits = pool.filter((p) => p.startsWith(last));
+    const parts = input.value.split(" ");
+    const last = parts.at(-1).toLowerCase();
+    const options = {
+      cat: files.filter((file) => file.endsWith(".txt")),
+      open: Object.keys(apps),
+      music: ["play", "pause", "stop", "vol"],
+    };
+    const pool = parts.length === 1 ? Object.keys(commands) : options[parts[0]];
+    if (!pool) return;
+    const hits = pool.filter((option) => option.startsWith(last));
     if (hits.length === 1) {
       parts[parts.length - 1] = hits[0];
       input.value = `${parts.join(" ")} `;
     } else if (hits.length > 1) {
-      echo(value);
+      echo(input.value);
       print([hits.join("   "), "t-key"]);
       scrollDown();
     }
   }
 
-  /* ---------- input ---------- */
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     if (busy) return;
@@ -324,72 +350,66 @@
   });
 
   input.addEventListener("keydown", (e) => {
-    if (e.key === "ArrowUp" || e.key === "ArrowDown") {
-      if (!history.length) return;
+    const key = e.key?.toLowerCase(); // undefined for some autofill events
+    if (key === "arrowup" || key === "arrowdown") {
+      if (!commandHistory.length) return;
       e.preventDefault();
-      historyIndex = Math.min(history.length, Math.max(0, historyIndex + (e.key === "ArrowUp" ? -1 : 1)));
-      input.value = history[historyIndex] || "";
-      const end = input.value.length;
-      input.setSelectionRange(end, end);
-    } else if (e.key === "Tab" && input.value) {
+      historyIndex = Math.min(commandHistory.length, Math.max(0, historyIndex + (key === "arrowup" ? -1 : 1)));
+      input.value = commandHistory[historyIndex] || "";
+      input.setSelectionRange(input.value.length, input.value.length);
+    } else if (key === "tab" && input.value) {
+      // only with text typed, so tab still moves focus out of an empty prompt
       e.preventDefault();
       complete();
-    } else if (e.ctrlKey && e.key.toLowerCase() === "l") {
+    } else if (e.ctrlKey && key === "l") {
       e.preventDefault();
       out.replaceChildren();
-    } else if (e.ctrlKey && e.key.toLowerCase() === "c" && input.selectionStart === input.selectionEnd && !String(window.getSelection())) {
+    } else if (e.ctrlKey && key === "c" && input.selectionStart === input.selectionEnd && !String(getSelection())) {
+      // with nothing selected anywhere, ctrl+c cancels the line instead of copying
       e.preventDefault();
-      print(...promptParts(), " ", seg(input.value, "t-val"), seg("^C", "t-dim"));
+      print(...prompt(), " ", span(input.value, "t-val"), span("^C", "t-dim"));
       input.value = "";
       scrollDown();
     }
   });
 
-  term.addEventListener("click", (e) => {
-    if (e.target.closest("a, button") || String(window.getSelection())) return;
+  document.querySelector(".term").addEventListener("click", (e) => {
+    if (e.target.closest("a, button") || String(getSelection())) return;
     input.focus({ preventScroll: true });
   });
 
-  on("music:change", (m) => {
-    document.querySelectorAll(".js-np").forEach((node) => {
-      node.textContent = nowPlaying(m);
-    });
+  document.addEventListener("music:change", (e) => {
+    for (const node of document.querySelectorAll(".js-np")) node.textContent = nowPlaying(e.detail);
   });
 
-  on("window:open", ({ id, quiet }) => {
-    if (id === "terminal" && !quiet && !matchMedia("(max-width: 760px)").matches) input.focus({ preventScroll: true });
-  });
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-  /* ---------- first run: type out neofetch ---------- */
   function hint() {
     print(["type ", "t-dim"], ["help", "t-key"], [" to see what you can do here.", "t-dim"]);
     scrollDown();
   }
 
+  // types "neofetch" at the prompt on first load
   async function start() {
-    if (started) return;
-    started = true;
-    if (reduceMotion) {
+    if (GIL.reduceMotion) {
       run("neofetch");
-      hint();
-      return;
+      return hint();
     }
     busy = true;
-    const ghost = print(...promptParts(), " ");
-    const typed = seg("", "t-val");
-    ghost.append(typed, el("span", { class: "caret", "aria-hidden": "true" }));
+    const typed = span("", "t-val");
+    const typing = print(...prompt(), " ", typed, el("span", { class: "caret", "aria-hidden": "true" }));
     await wait(400);
     for (const ch of "neofetch") {
       typed.textContent += ch;
       await wait(55 + Math.random() * 60);
     }
     await wait(200);
-    ghost.remove();
+    typing.remove();
     run("neofetch");
     hint();
     busy = false;
   }
 
-  document.getElementById("term-prompt").replaceChildren(...promptParts());
-  GIL.terminal = { start, run, focus: () => input.focus({ preventScroll: true }) };
+  document.getElementById("term-prompt").replaceChildren(...prompt());
+  GIL.terminal = { start, focus: () => input.focus({ preventScroll: true }) };
 })();
