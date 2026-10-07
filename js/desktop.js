@@ -1,80 +1,24 @@
 (() => {
-  const { site, el, span } = GIL;
+  const { site, el, span, icon, mobile } = GIL;
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
-  const mobile = matchMedia("(max-width: 760px)"); // same breakpoint as style.css
   const taskbar = $(".taskbar");
+  const icons = $("#icons");
 
-  function svgIcon(id) {
-    const ns = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(ns, "svg");
-    svg.setAttribute("class", "ico");
-    svg.setAttribute("aria-hidden", "true");
-    const use = document.createElementNS(ns, "use");
-    use.setAttribute("href", `#${id}`);
-    svg.append(use);
-    return svg;
-  }
-
-  // Each row is the content of one line. The terminal's `cat` prints the same rows.
-  function aboutRows() {
-    const rows = [[span("# about_me.txt", "e-h")], []];
-    for (const [key, value] of site.about) {
-      rows.push([el("span", { class: "e-kv" }, [span(key, "e-k"), span(value, "e-v")])]);
-    }
-    for (const paragraph of site.aboutText) rows.push([], [span(paragraph, "e-p")]);
-    return rows;
-  }
-
-  function dniRows() {
-    const rows = [[span("# dni.txt", "e-h")], []];
-    if (site.dniIntro) rows.push([span(site.dniIntro, "e-p")]);
-    for (const item of site.dni) rows.push([span(item, "e-li")]);
-    if (site.dniOutro) rows.push([], [span(site.dniOutro, "e-dim")]);
-    return rows;
-  }
-
-  GIL.files = { "about_me.txt": aboutRows, "dni.txt": dniRows };
-
-  function renderFile(id, rows) {
-    $(`#${id}-lines`).replaceChildren(...rows.map((row) => el("li", {}, row)));
-    $(`#${id}-count`).textContent = `${rows.length} lines`;
-  }
-
-  function fillContent() {
-    document.title = site.osName;
-    for (const node of $$("[data-tpl]")) {
-      node.textContent = node.dataset.tpl.replace(/\{(\w+)\}/g, (_, key) => site[key]);
-    }
-    $("#avatar").alt = `${site.name}'s profile picture`;
-    $(".boot-logo").textContent = GIL.logo;
-    $(".js-year").textContent = new Date().getFullYear();
-    renderFile("about", aboutRows());
-    renderFile("dni", dniRows());
-
-    if (site.links.length) {
-      const box = $("#profile-links");
-      box.replaceChildren(
-        ...site.links.map((link) =>
-          el("a", { class: "chip", href: link.url, target: "_blank", rel: "noopener" }, [
-            svgIcon("i-link"),
-            span(link.label),
-          ]),
-        ),
-      );
-      box.hidden = false;
-    }
-  }
-
-  // Window layout. Widths come from style.css: profile 340px, music 360px.
-  const ICONS_RIGHT = 112;
-  const TERMINAL_LEFT = ICONS_RIGHT + 340 + 24;
   const WIDE = 1480; // enough room for profile, terminal and music side by side
+  const PROFILE_WIDTH = 340; // matches style.css
 
   const wins = {};
   let topZ = 10;
   let active = null;
   let cascade = 0;
+
+  // "about_me.txt" -> "about_me<wbr>.txt" so narrow icon labels break at the dot
+  function iconLabel(title) {
+    const dot = title.lastIndexOf(".");
+    if (dot < 1) return [title];
+    return [title.slice(0, dot), el("wbr"), title.slice(dot)];
+  }
 
   function viewport() {
     return { vw: window.innerWidth, vh: window.innerHeight - taskbar.offsetHeight };
@@ -92,21 +36,26 @@
   function place(w) {
     const { vw, vh } = viewport();
     const wide = vw >= WIDE;
+    const left = icons.getBoundingClientRect().right + 12;
+    const terminalLeft = left + PROFILE_WIDTH + 24;
     let x;
     let y;
     if (w.id === "profile") {
-      x = ICONS_RIGHT;
+      x = left;
       y = 28;
     } else if (w.id === "terminal") {
-      const room = vw - TERMINAL_LEFT - (wide ? 360 + 56 : 24);
+      const room = vw - terminalLeft - (wide ? 360 + 56 : 24);
       const width = Math.round(Math.min(700, Math.max(420, room)));
       w.el.style.width = `${width}px`;
       w.el.style.height = `${Math.round(Math.max(280, Math.min(520, vh - 76)))}px`;
-      x = Math.min(TERMINAL_LEFT, vw - width - 16);
+      x = Math.min(terminalLeft, vw - width - 16);
       y = 52;
     } else if (w.id === "music") {
       x = vw - w.el.offsetWidth - 28;
       y = wide ? 28 : vh - w.el.offsetHeight - 20;
+    } else if (w.id === "sysmon" && wide) {
+      x = vw - w.el.offsetWidth - 28;
+      y = wins.music.y + wins.music.el.offsetHeight + 16;
     } else {
       // step down by about a title bar so the window underneath can still be grabbed
       const n = cascade++ % 6;
@@ -148,6 +97,7 @@
       w.el.classList.add("pop");
     }
     focus(id);
+    if (wasHidden) document.dispatchEvent(new CustomEvent("window:open", { detail: { id } }));
     if (quiet) return;
     if (mobile.matches) w.el.scrollIntoView({ behavior: GIL.reduceMotion ? "auto" : "smooth", block: "start" });
     else if (id === "terminal") GIL.terminal.focus();
@@ -156,6 +106,7 @@
   function hide(id, state) {
     const w = wins[id];
     if (w.state === "closed" || w.state === state) return;
+    const wasOpen = w.state === "open";
     w.state = state;
     w.el.hidden = true;
     w.el.classList.remove("is-active");
@@ -163,10 +114,12 @@
     if (id === "music" && state === "closed") GIL.music.stop();
     renderTasks();
     focusTopmost();
+    if (wasOpen) document.dispatchEvent(new CustomEvent("window:hide", { detail: { id } }));
   }
 
   const close = (id) => hide(id, "closed");
   const minimize = (id) => hide(id, "minimized");
+  const isOpen = (id) => wins[id].state === "open";
 
   function enableDrag(w) {
     const bar = $(".titlebar", w.el);
@@ -201,18 +154,40 @@
     }
   }
 
+  // title bars, desktop icons, start menu entries and taskbar buttons all come from the
+  // data-title / data-icon attributes on each window
   for (const node of $$(".window")) {
-    const w = { id: node.dataset.app, el: node, state: "closed", placed: false, x: 0, y: 0 };
-    const { title, icon } = node.dataset;
-    w.task = el("button", { type: "button", class: "task", title, hidden: true }, [svgIcon(icon), span(title)]);
-    w.task.addEventListener("click", () => (w.state === "open" && active === w.id ? minimize(w.id) : open(w.id)));
+    const { app: id, title, icon: iconId, heading } = node.dataset;
+    const titleId = `t-${id}`;
+    node.setAttribute("aria-labelledby", titleId);
+    node.prepend(
+      el("header", { class: "titlebar" }, [
+        icon(iconId),
+        el("h2", { class: "titlebar-title", id: titleId, "data-tpl": heading, text: title }),
+        el("div", { class: "titlebar-btns" }, [
+          el("button", { type: "button", class: "tb tb-min", "aria-label": `minimize ${title}` }, [icon("i-min")]),
+          el("button", { type: "button", class: "tb tb-close", "aria-label": `close ${title}` }, [icon("i-close")]),
+        ]),
+      ]),
+    );
+    icons.append(
+      el("button", { type: "button", class: "icon", "data-open": id }, [
+        el("span", { class: "icon-tile" }, [icon(iconId)]),
+        el("span", { class: "icon-label" }, iconLabel(title)),
+      ]),
+    );
+    $("#start-apps").append(el("button", { type: "button", "data-open": id }, [icon(iconId), title]));
+
+    const w = { id, el: node, state: "closed", placed: false, x: 0, y: 0 };
+    w.task = el("button", { type: "button", class: "task", title, hidden: true }, [icon(iconId), span(title)]);
+    w.task.addEventListener("click", () => (w.state === "open" && active === id ? minimize(id) : open(id)));
     $("#tasks").append(w.task);
-    $(".tb-min", node).addEventListener("click", () => minimize(w.id));
-    $(".tb-close", node).addEventListener("click", () => close(w.id));
-    node.addEventListener("pointerdown", () => focus(w.id));
-    node.addEventListener("focusin", () => focus(w.id));
+    $(".tb-min", node).addEventListener("click", () => minimize(id));
+    $(".tb-close", node).addEventListener("click", () => close(id));
+    node.addEventListener("pointerdown", () => focus(id));
+    node.addEventListener("focusin", () => focus(id));
     enableDrag(w);
-    wins[w.id] = w;
+    wins[id] = w;
   }
 
   document.addEventListener("click", (e) => {
@@ -255,6 +230,15 @@
   });
   $("#reboot").addEventListener("click", () => location.reload());
 
+  const petsToggle = $("#pets-toggle");
+  function renderPetsToggle() {
+    $("span", petsToggle).textContent = GIL.critters.enabled() ? "hide pets" : "show pets";
+  }
+  petsToggle.addEventListener("click", () => {
+    GIL.critters.setEnabled(!GIL.critters.enabled());
+    renderPetsToggle();
+  });
+
   const tray = $("#tray-music");
   tray.addEventListener("click", () => open("music"));
   document.addEventListener("music:change", (e) => {
@@ -281,10 +265,11 @@
   }
 
   function start() {
+    const wide = window.innerWidth >= WIDE;
     // on medium screens music overlaps the terminal, so open it last to keep its play button on top
-    const order =
-      window.innerWidth >= WIDE || mobile.matches ? ["profile", "music", "terminal"] : ["profile", "terminal", "music"];
+    const order = wide || mobile.matches ? ["profile", "music", "terminal"] : ["profile", "terminal", "music"];
     for (const id of order) open(id, { quiet: true });
+    if (wide && viewport().vh - (wins.music.y + wins.music.el.offsetHeight) > 360) open("sysmon", { quiet: true });
     const hash = location.hash.slice(1);
     if (Object.hasOwn(wins, hash)) open(hash);
     GIL.terminal.start();
@@ -298,12 +283,14 @@
     }
     const ok = (text) => [["[  ok  ] ", "ok"], [text]];
     const lines = [
-      [[`${site.osName} 1.0 · tty1`, "dim"]],
+      [[`${site.osName} 2.0 · tty1`, "dim"]],
       [],
       ok("loaded theme: purple gradient"),
       ok(`mounted /home/${site.name}`),
       ok(`started ${site.name}sh`),
       ok("started music.exe"),
+      ok("woke up the pets"),
+      ok("taught the chess bot the rules"),
       ok(`loaded profile ${site.handle}`),
       ok("reached target: desktop"),
       [],
@@ -331,9 +318,9 @@
             lines[i++].map(([text, className]) => span(text, className)),
           ),
         );
-        timer = setTimeout(step, 90 + Math.random() * 90);
+        timer = setTimeout(step, 80 + Math.random() * 80);
       } else {
-        timer = setTimeout(finish, 700);
+        timer = setTimeout(finish, 650);
       }
     };
     screen.addEventListener("click", finish);
@@ -341,10 +328,13 @@
     step();
   }
 
-  GIL.desktop = { open, close };
+  GIL.desktop = { open, close, isOpen };
 
-  fillContent();
   tick();
   setInterval(tick, 1000);
-  boot();
+  // boot after every script has loaded, since start() calls into the terminal and pets
+  document.addEventListener("DOMContentLoaded", () => {
+    renderPetsToggle();
+    boot();
+  });
 })();

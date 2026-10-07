@@ -6,14 +6,11 @@
 
   const USER = "visitor";
   const SHELL = `${site.name}sh`;
-  const apps = {
-    profile: "profile.exe",
-    about: "about_me.txt",
-    dni: "dni.txt",
-    music: "music.exe",
-    terminal: "terminal",
-  };
-  const files = ["about_me.txt", "dni.txt", "music.exe", "profile.exe"];
+  // window id -> name shown in the shell, read from the windows themselves
+  const apps = Object.fromEntries(
+    [...document.querySelectorAll(".window")].map((node) => [node.dataset.app, node.dataset.title]),
+  );
+  const files = Object.values(apps).filter((name) => name.includes("."));
   const commandHistory = [];
   let historyIndex = 0;
   let busy = false;
@@ -157,6 +154,7 @@
       line(span("hey, ", "t-dim"), span(USER, "t-user"), span(" :)", "t-dim")),
       ...box(site.name, [
         ["user", `${site.name} (${site.handle})`],
+        ["pronouns", site.pronouns],
         ["status", el("span", { class: "t-val" }, [span("● ", "t-hl"), site.status])],
         ["music", span(nowPlaying(GIL.music.info()), "t-val js-np")],
         ["uptime", span(GIL.formatUptime(Date.now() - GIL.bootTime), "t-val js-uptime-long")],
@@ -209,7 +207,7 @@
   }
 
   function open([name]) {
-    if (!name) return print(["usage: open <app>. apps: profile, about, dni, music, terminal", "t-dim"]);
+    if (!name) return print([`usage: open <app>. apps: ${Object.keys(apps).join(", ")}`, "t-dim"]);
     const id = appId(name);
     if (!id) return print([`open: ${name}: no such app`, "t-err"]);
     print([`opening ${apps[id]}…`, "t-dim"]);
@@ -298,7 +296,14 @@
     ping: () => print(["pong", "t-val"]),
     vim: () => print(["no editors here. try cat instead.", "t-dim"]),
     nano: () => print(["no editors here. try cat instead.", "t-dim"]),
+    objection: () => print(["OBJECTION!", "t-objection"]),
+    pets: () => {
+      GIL.critters.setEnabled(!GIL.critters.enabled());
+      print([GIL.critters.enabled() ? "the pets are back." : "the pets went to sleep.", "t-dim"]);
+    },
   };
+  // every app name also works as a command, e.g. `chess`
+  for (const id of Object.keys(apps)) unlisted[id] ??= () => open([id]);
 
   function run(raw) {
     const line = raw.trim();

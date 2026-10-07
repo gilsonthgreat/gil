@@ -37,7 +37,7 @@
   let wantPlay = false;
   let stopping = false;
   let title = cfg.title;
-  let volume = clampVolume(storedVolume() ?? cfg.volume);
+  let volume = clampVolume(GIL.store.get(VOLUME_KEY) ?? cfg.volume);
   let position = 0;
   let duration = 0;
   let seeking = false;
@@ -47,14 +47,6 @@
   function clampVolume(value) {
     const n = Number(value);
     return Number.isFinite(n) ? Math.min(100, Math.max(0, Math.round(n))) : 40;
-  }
-
-  function storedVolume() {
-    try {
-      return localStorage.getItem(VOLUME_KEY);
-    } catch {
-      return null; // storage blocked, e.g. some private windows
-    }
   }
 
   function formatTime(sec) {
@@ -207,11 +199,7 @@
       player.setVolume(volume);
       if (volume > 0 && player.isMuted()) player.unMute();
     }
-    try {
-      localStorage.setItem(VOLUME_KEY, volume);
-    } catch {
-      // storage blocked; the volume just won't be remembered
-    }
+    GIL.store.set(VOLUME_KEY, volume);
     render();
   }
 

@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <canvas id="stars" aria-hidden="true"></canvas>
+    <canvas id="sky" aria-hidden="true"></canvas>
     <div class="nebula" aria-hidden="true"></div>
 
     <svg class="sprite" aria-hidden="true" focusable="false">
@@ -48,6 +48,46 @@
         <circle cx="6.5" cy="18" r="2.5" />
         <circle cx="17.5" cy="16" r="2.5" />
       </symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24">
+        <path d="M12 20s-7.5-4.6-7.5-10.1A4.15 4.15 0 0 1 12 7.6a4.15 4.15 0 0 1 7.5 2.3C19.5 15.4 12 20 12 20z" />
+      </symbol>
+      <symbol id="i-bars" viewBox="0 0 24 24">
+        <path d="M4 20h16" />
+        <rect x="5" y="12" width="3.5" height="5.5" rx="1" />
+        <rect x="10.25" y="8" width="3.5" height="9.5" rx="1" />
+        <rect x="15.5" y="4" width="3.5" height="13.5" rx="1" />
+      </symbol>
+      <symbol id="i-image" viewBox="0 0 24 24">
+        <rect x="3" y="4.5" width="18" height="15" rx="2.5" />
+        <circle cx="9" cy="10" r="1.75" />
+        <path d="M3.5 17.5l5-4.5 4 3.5 3-2.5 5 4" />
+      </symbol>
+      <symbol id="i-chess" viewBox="0 0 24 24">
+        <path d="M7 20.5h10" />
+        <path
+          d="M8.5 17.5H16l-.5-3c1.8-1.5 2.3-3.8 1.4-6.1C15.8 5.6 13.2 3.8 10.2 4.2l.6 1.6L8 8.2l.7 2 3.2-.8-3.4 5.1z"
+        />
+      </symbol>
+      <symbol id="i-bird" viewBox="0 0 24 24">
+        <path
+          d="M4.5 13.5c0-3.9 3.3-6.5 7-6.5 3.4 0 6 2.4 6.5 5.5l2.5 1.5-2.7 1.3c-1.1 2.8-3.8 4.2-6.8 4.2-3.8 0-6.5-2.4-6.5-6z"
+        />
+        <path d="M8.5 12.5c1.5.2 3 1.3 3.5 3" />
+        <circle cx="14" cy="11" r=".8" />
+      </symbol>
+      <symbol id="i-pulse" viewBox="0 0 24 24">
+        <rect x="2.75" y="4" width="18.5" height="16" rx="2.5" />
+        <path d="M5.5 13h3l1.8-4 2.8 7.5 2-5h3.4" />
+      </symbol>
+      <symbol id="i-paw" viewBox="0 0 24 24">
+        <path
+          d="M7.5 18c0-3 2-5.5 4.5-5.5s4.5 2.5 4.5 5.5c0 1.5-1 2.2-2.2 2.2-.9 0-1.4-.5-2.3-.5s-1.4.5-2.3.5c-1.2 0-2.2-.7-2.2-2.2z"
+        />
+        <ellipse cx="5.5" cy="11.5" rx="1.6" ry="2.2" transform="rotate(-25 5.5 11.5)" />
+        <ellipse cx="9.3" cy="7" rx="1.6" ry="2.3" transform="rotate(-8 9.3 7)" />
+        <ellipse cx="14.7" cy="7" rx="1.6" ry="2.3" transform="rotate(8 14.7 7)" />
+        <ellipse cx="18.5" cy="11.5" rx="1.6" ry="2.2" transform="rotate(25 18.5 11.5)" />
+      </symbol>
       <symbol id="i-link" viewBox="0 0 24 24">
         <path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1" />
         <path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1" />
@@ -63,6 +103,8 @@
       </symbol>
       <symbol id="i-min" viewBox="0 0 24 24"><path d="M6 17h12" /></symbol>
       <symbol id="i-close" viewBox="0 0 24 24"><path d="M7 7l10 10M17 7L7 17" /></symbol>
+      <symbol id="i-prev" viewBox="0 0 24 24"><path d="M14.5 6l-6 6 6 6" /></symbol>
+      <symbol id="i-next" viewBox="0 0 24 24"><path d="M9.5 6l6 6-6 6" /></symbol>
       <symbol id="i-play" viewBox="0 0 24 24">
         <path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none" />
       </symbol>
@@ -84,87 +126,52 @@
     </div>
 
     <main id="desktop">
-      <nav class="icons" aria-label="desktop shortcuts">
-        <button type="button" class="icon" data-open="profile">
-          <span class="icon-tile">
-            <svg class="ico" aria-hidden="true"><use href="#i-user" /></svg>
-          </span>
-          <span class="icon-label">profile<wbr />.exe</span>
-        </button>
-        <button type="button" class="icon" data-open="terminal">
-          <span class="icon-tile">
-            <svg class="ico" aria-hidden="true"><use href="#i-terminal" /></svg>
-          </span>
-          <span class="icon-label">terminal</span>
-        </button>
-        <button type="button" class="icon" data-open="about">
-          <span class="icon-tile">
-            <svg class="ico" aria-hidden="true"><use href="#i-file" /></svg>
-          </span>
-          <span class="icon-label">about_me<wbr />.txt</span>
-        </button>
-        <button type="button" class="icon" data-open="dni">
-          <span class="icon-tile">
-            <svg class="ico" aria-hidden="true"><use href="#i-ban" /></svg>
-          </span>
-          <span class="icon-label">dni<wbr />.txt</span>
-        </button>
-        <button type="button" class="icon" data-open="music">
-          <span class="icon-tile">
-            <svg class="ico" aria-hidden="true"><use href="#i-music" /></svg>
-          </span>
-          <span class="icon-label">music<wbr />.exe</span>
-        </button>
-      </nav>
+      <nav class="icons" id="icons" aria-label="desktop shortcuts"></nav>
 
-      <section
-        class="window"
-        data-app="profile"
-        data-title="profile.exe"
-        data-icon="i-user"
-        aria-labelledby="t-profile"
-        hidden
-      >
-        <header class="titlebar">
-          <svg class="ico" aria-hidden="true"><use href="#i-user" /></svg>
-          <h2 class="titlebar-title" id="t-profile">profile.exe</h2>
-          <div class="titlebar-btns">
-            <button type="button" class="tb tb-min" aria-label="minimize profile.exe">
-              <svg class="ico" aria-hidden="true"><use href="#i-min" /></svg>
-            </button>
-            <button type="button" class="tb tb-close" aria-label="close profile.exe">
-              <svg class="ico" aria-hidden="true"><use href="#i-close" /></svg>
-            </button>
-          </div>
-        </header>
+      <section class="window" data-app="profile" data-title="profile.exe" data-icon="i-user" hidden>
         <div class="window-body">
-          <div class="banner" aria-hidden="true">
-            <span class="banner-code">$ whoami<br /><span data-tpl="{name}">gil</span></span>
-            <span class="banner-tag" data-tpl="/home/{name}">/home/gil</span>
-          </div>
-          <div class="profile-head">
-            <div class="avatar-ring">
-              <img id="avatar" src="assets/avatar.png" alt="gil's profile picture" width="96" height="96" />
+          <div class="profile-card" id="profile-card">
+            <div class="banner" aria-hidden="true">
+              <span class="banner-code">$ whoami<br /><span data-tpl="{name}">gil</span></span>
+              <span class="banner-tag" data-tpl="/home/{name}">/home/gil</span>
             </div>
-            <div class="profile-id">
-              <h1 class="profile-name" data-tpl="{name}">gil</h1>
-              <p class="profile-handle" data-tpl="{handle}">@gil</p>
+            <div class="profile-head">
+              <div class="avatar-ring">
+                <img id="avatar" src="assets/avatar.png" alt="gil's profile picture" width="96" height="96" />
+              </div>
+              <div class="profile-id">
+                <h1 class="profile-name" data-tpl="{name}">gil</h1>
+                <p class="profile-handle" data-tpl="{handle}">@gil</p>
+              </div>
             </div>
+            <span class="card-glare" aria-hidden="true"></span>
           </div>
-          <p class="status-pill"><span class="dot" aria-hidden="true"></span><span data-tpl="{status}">online</span></p>
+          <div class="profile-tags">
+            <span class="tag"><span class="dot" aria-hidden="true"></span><span data-tpl="{status}">online</span></span>
+            <span class="tag" data-tpl="{pronouns}"></span>
+            <span class="tag" data-tpl="{age}"></span>
+            <span class="tag" data-tpl="{timezone}"></span>
+            <span class="tag roots" id="profile-roots"></span>
+          </div>
           <p class="welcome" data-tpl="{welcome}"></p>
           <div class="profile-actions">
             <button type="button" class="action" data-open="about">
               <svg class="ico" aria-hidden="true"><use href="#i-file" /></svg>about me
             </button>
+            <button type="button" class="action" data-open="skills">
+              <svg class="ico" aria-hidden="true"><use href="#i-bars" /></svg>skills
+            </button>
+            <button type="button" class="action" data-open="friends">
+              <svg class="ico" aria-hidden="true"><use href="#i-heart" /></svg>friends
+            </button>
             <button type="button" class="action" data-open="dni">
               <svg class="ico" aria-hidden="true"><use href="#i-ban" /></svg>dni
             </button>
-            <button type="button" class="action" data-open="music">
-              <svg class="ico" aria-hidden="true"><use href="#i-music" /></svg>music
+            <button type="button" class="action" data-open="gallery">
+              <svg class="ico" aria-hidden="true"><use href="#i-image" /></svg>gallery
             </button>
-            <button type="button" class="action" data-open="terminal">
-              <svg class="ico" aria-hidden="true"><use href="#i-terminal" /></svg>terminal
+            <button type="button" class="action" data-open="chess">
+              <svg class="ico" aria-hidden="true"><use href="#i-chess" /></svg>chess
             </button>
           </div>
           <div class="profile-links" id="profile-links" hidden></div>
@@ -175,26 +182,7 @@
         </div>
       </section>
 
-      <section
-        class="window"
-        data-app="music"
-        data-title="music.exe"
-        data-icon="i-music"
-        aria-labelledby="t-music"
-        hidden
-      >
-        <header class="titlebar">
-          <svg class="ico" aria-hidden="true"><use href="#i-music" /></svg>
-          <h2 class="titlebar-title" id="t-music">music.exe</h2>
-          <div class="titlebar-btns">
-            <button type="button" class="tb tb-min" aria-label="minimize music.exe">
-              <svg class="ico" aria-hidden="true"><use href="#i-min" /></svg>
-            </button>
-            <button type="button" class="tb tb-close" aria-label="close music.exe">
-              <svg class="ico" aria-hidden="true"><use href="#i-close" /></svg>
-            </button>
-          </div>
-        </header>
+      <section class="window" data-app="music" data-title="music.exe" data-icon="i-music" hidden>
         <div class="window-body music">
           <div class="np">
             <span class="np-label">now playing</span>
@@ -236,22 +224,10 @@
         class="window"
         data-app="terminal"
         data-title="terminal"
+        data-heading="{name}sh · visitor@{osName}"
         data-icon="i-terminal"
-        aria-labelledby="t-terminal"
         hidden
       >
-        <header class="titlebar">
-          <svg class="ico" aria-hidden="true"><use href="#i-terminal" /></svg>
-          <h2 class="titlebar-title" id="t-terminal" data-tpl="{name}sh · visitor@{osName}">gilsh · visitor@gilOS</h2>
-          <div class="titlebar-btns">
-            <button type="button" class="tb tb-min" aria-label="minimize terminal">
-              <svg class="ico" aria-hidden="true"><use href="#i-min" /></svg>
-            </button>
-            <button type="button" class="tb tb-close" aria-label="close terminal">
-              <svg class="ico" aria-hidden="true"><use href="#i-close" /></svg>
-            </button>
-          </div>
-        </header>
         <div class="window-body term-body">
           <div class="term">
             <div class="term-out" id="term-out" role="log" aria-live="polite"></div>
@@ -271,26 +247,41 @@
         </div>
       </section>
 
-      <section
-        class="window"
-        data-app="about"
-        data-title="about_me.txt"
-        data-icon="i-file"
-        aria-labelledby="t-about"
-        hidden
-      >
-        <header class="titlebar">
-          <svg class="ico" aria-hidden="true"><use href="#i-file" /></svg>
-          <h2 class="titlebar-title" id="t-about">about_me.txt</h2>
-          <div class="titlebar-btns">
-            <button type="button" class="tb tb-min" aria-label="minimize about_me.txt">
-              <svg class="ico" aria-hidden="true"><use href="#i-min" /></svg>
-            </button>
-            <button type="button" class="tb tb-close" aria-label="close about_me.txt">
-              <svg class="ico" aria-hidden="true"><use href="#i-close" /></svg>
-            </button>
+      <section class="window" data-app="sysmon" data-title="sysmon.exe" data-icon="i-pulse" hidden>
+        <div class="window-body sysmon">
+          <div class="mon-clocks">
+            <div class="mon-clock">
+              <span class="mon-label" id="mon-gil-label">gil</span>
+              <span class="mon-time" id="mon-gil-time">--:--</span>
+            </div>
+            <div class="mon-clock">
+              <span class="mon-label" id="mon-you-label">you</span>
+              <span class="mon-time" id="mon-you-time">--:--</span>
+            </div>
           </div>
-        </header>
+          <div class="mon-graph">
+            <div class="mon-head">
+              <span class="mon-label">frame rate</span><span class="mon-value" id="mon-fps">--</span>
+            </div>
+            <canvas id="mon-fps-graph"></canvas>
+          </div>
+          <div class="mon-graph">
+            <div class="mon-head">
+              <span class="mon-label">cursor speed</span><span class="mon-value" id="mon-speed">--</span>
+            </div>
+            <canvas id="mon-speed-graph"></canvas>
+          </div>
+          <div class="mon-graph">
+            <div class="mon-head">
+              <span class="mon-label">frame time</span><span class="mon-value" id="mon-ms">--</span>
+            </div>
+            <canvas id="mon-ms-graph"></canvas>
+          </div>
+          <p class="mon-foot">measured live in your browser · session <span class="js-uptime">00:00:00</span></p>
+        </div>
+      </section>
+
+      <section class="window" data-app="about" data-title="about_me.txt" data-icon="i-file" hidden>
         <div class="window-body editor">
           <ol class="lines" id="about-lines"></ol>
           <div class="statusbar">
@@ -299,19 +290,7 @@
         </div>
       </section>
 
-      <section class="window" data-app="dni" data-title="dni.txt" data-icon="i-ban" aria-labelledby="t-dni" hidden>
-        <header class="titlebar">
-          <svg class="ico" aria-hidden="true"><use href="#i-ban" /></svg>
-          <h2 class="titlebar-title" id="t-dni">dni.txt</h2>
-          <div class="titlebar-btns">
-            <button type="button" class="tb tb-min" aria-label="minimize dni.txt">
-              <svg class="ico" aria-hidden="true"><use href="#i-min" /></svg>
-            </button>
-            <button type="button" class="tb tb-close" aria-label="close dni.txt">
-              <svg class="ico" aria-hidden="true"><use href="#i-close" /></svg>
-            </button>
-          </div>
-        </header>
+      <section class="window" data-app="dni" data-title="dni.txt" data-icon="i-ban" hidden>
         <div class="window-body editor">
           <ol class="lines" id="dni-lines"></ol>
           <div class="statusbar">
@@ -319,7 +298,68 @@
           </div>
         </div>
       </section>
+
+      <section class="window" data-app="friends" data-title="friends.exe" data-icon="i-heart" hidden>
+        <div class="window-body friends">
+          <p class="section-label">shoutouts</p>
+          <div class="carousel" aria-hidden="true"><div class="carousel-ring" id="carousel-ring"></div></div>
+          <ul class="friends-list" id="friends-list"></ul>
+          <p class="friends-note" data-tpl="{friendsNote}"></p>
+        </div>
+      </section>
+
+      <section class="window" data-app="skills" data-title="skills.exe" data-icon="i-bars" hidden>
+        <div class="window-body skills">
+          <p class="section-label">what i'm good at</p>
+          <ul class="skill-list" id="skill-list"></ul>
+          <p class="for-hire"><span class="dot" aria-hidden="true"></span><span data-tpl="{forHire}"></span></p>
+        </div>
+      </section>
+
+      <section class="window" data-app="gallery" data-title="gallery.exe" data-icon="i-image" hidden>
+        <div class="window-body gallery">
+          <div class="gallery-stage"><img id="gallery-img" alt="" /></div>
+          <p class="gallery-caption" id="gallery-caption"></p>
+          <div class="gallery-controls">
+            <button type="button" class="ctrl" id="gallery-prev" aria-label="previous image">
+              <svg class="ico" aria-hidden="true"><use href="#i-prev" /></svg>
+            </button>
+            <div class="gallery-dots" id="gallery-dots"></div>
+            <button type="button" class="ctrl" id="gallery-next" aria-label="next image">
+              <svg class="ico" aria-hidden="true"><use href="#i-next" /></svg>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section class="window" data-app="chess" data-title="chess.exe" data-icon="i-chess" hidden>
+        <div class="window-body chess">
+          <div class="chess-bar">
+            <label class="chess-level">
+              bot
+              <select id="chess-level">
+                <option value="1">easy</option>
+                <option value="2" selected>normal</option>
+                <option value="3">hard</option>
+              </select>
+            </label>
+            <button type="button" class="ctrl" id="chess-3d" aria-pressed="false">3d view</button>
+            <button type="button" class="ctrl" id="chess-new">new game</button>
+          </div>
+          <div class="board-wrap"><div class="board" id="chess-board" role="grid" aria-label="chess board"></div></div>
+          <p class="chess-status" id="chess-status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="window" data-app="flappy" data-title="flappy.exe" data-icon="i-bird" hidden>
+        <div class="window-body flappy">
+          <canvas id="flappy-canvas" tabindex="0" aria-label="flappy game: click, tap or press space to flap"></canvas>
+          <p class="flappy-hint">click, tap or space to flap · best <span id="flappy-best">0</span></p>
+        </div>
+      </section>
     </main>
+
+    <div id="critters" aria-hidden="true"></div>
 
     <footer class="taskbar">
       <button
@@ -344,34 +384,33 @@
         <img src="assets/avatar.png" alt="" width="34" height="34" />
         <div><b data-tpl="{name}">gil</b><span data-tpl="{handle}">@gil</span></div>
       </div>
-      <button type="button" data-open="profile">
-        <svg class="ico" aria-hidden="true"><use href="#i-user" /></svg>profile.exe
-      </button>
-      <button type="button" data-open="terminal">
-        <svg class="ico" aria-hidden="true"><use href="#i-terminal" /></svg>terminal
-      </button>
-      <button type="button" data-open="about">
-        <svg class="ico" aria-hidden="true"><use href="#i-file" /></svg>about_me.txt
-      </button>
-      <button type="button" data-open="dni">
-        <svg class="ico" aria-hidden="true"><use href="#i-ban" /></svg>dni.txt
-      </button>
-      <button type="button" data-open="music">
-        <svg class="ico" aria-hidden="true"><use href="#i-music" /></svg>music.exe
-      </button>
+      <div class="start-apps" id="start-apps"></div>
       <hr />
+      <button type="button" id="pets-toggle">
+        <svg class="ico" aria-hidden="true"><use href="#i-paw" /></svg><span>hide pets</span>
+      </button>
       <button type="button" id="reboot">
         <svg class="ico" aria-hidden="true"><use href="#i-power" /></svg>reboot
       </button>
     </div>
 
+    <div class="cursor-ring" aria-hidden="true"></div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+
     <noscript><p class="noscript">gilOS needs JavaScript to boot. turn it on and refresh the page.</p></noscript>
 
     <script src="config.js"></script>
+    <script src="vendor/chess.js"></script>
     <script src="js/core.js"></script>
-    <script src="js/stars.js"></script>
+    <script src="js/desktop.js"></script>
+    <script src="js/content.js"></script>
+    <script src="js/sky.js"></script>
+    <script src="js/cursor.js"></script>
+    <script src="js/critters.js"></script>
     <script src="js/music.js"></script>
     <script src="js/terminal.js"></script>
-    <script src="js/desktop.js"></script>
+    <script src="js/sysmon.js"></script>
+    <script src="js/chess-game.js"></script>
+    <script src="js/flappy.js"></script>
   </body>
 </html>
