@@ -13,7 +13,7 @@
       this.flip = 1; // the artwork faces left; -1 mirrors it to face right
       this.phase = 0;
       this.moving = false;
-      this.mode = "idle"; // drives the pose: idle, walk, sleep, fight, held, fall, land, fly, perch, hang, climb
+      this.mode = "idle"; // drives the pose: idle, walk, sniff, sleep, fight, held, fall, land, fly, perch, hang, climb
       this.modeAt = 0;
       this.nudge = 0; // sideways shove while fighting
       this.vx = 0;
@@ -87,6 +87,14 @@
           return { ...rest, rot: Math.max(-20, Math.min(20, this.vx * 0.03)), sy: 1.06 };
         case "sleep":
           return { ...rest, dy: 1, sx: 1.06, sy: 0.84 + Math.sin(t * 1.6) * 0.02 };
+        case "sniff":
+          // head tilting this way and that, nose twitching
+          return {
+            ...rest,
+            dy: hop,
+            rot: Math.sin(t * 1.7) * 7 + Math.sin(t * 19) * 1.2,
+            sy: 1 + Math.sin(t * 13) * 0.02,
+          };
         case "fight":
           return {
             ...rest,

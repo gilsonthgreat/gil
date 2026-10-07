@@ -34,8 +34,46 @@ window.SITE = {
   ],
   aboutText: ["objection! if you made it this far, you're cool. say hi."],
 
-  // dni.txt
-  dni: ["no dni.", "i block freely."],
+  // dni.txt: the basic dni criteria (basic-dni.crd.co), then anything else to say
+  dni: {
+    criteria: [
+      "homophobic, transphobic, xenophobic, islamophobic, etc.",
+      "misogynistic",
+      "racist, sexist, ableist, discrimination, etc.",
+      "invalidates a person's pronouns / gender / identity",
+      "pedophile, sexualizes minors, jokes about r×pe, etc.",
+    ],
+    notes: ["supports, participates, tolerates, or justify any of the above.", "i block freely."],
+    source: "https://basic-dni.crd.co/",
+  },
+
+  // projects.exe: roblox games worked on. roles can be "dev", "mod" and "actor"; url is optional
+  projects: [
+    { name: "KEPLER V2", url: "https://www.roblox.com/games/126257737867782/KEPLER-V2", roles: ["dev"] },
+    {
+      name: "Flowing Cogito",
+      url: "https://www.roblox.com/games/74182468438308/Flowing-Cogito",
+      roles: ["dev", "mod"],
+    },
+    {
+      name: "Bleach Primordial",
+      url: "https://www.roblox.com/games/135513267808801/Title-Unavailable",
+      roles: ["dev", "mod"],
+    },
+    {
+      name: "Efflorescence II: City's Clutches",
+      url: "https://www.roblox.com/games/126812721974678/Efflorescence-II-Citys-Clutches",
+      roles: ["dev", "mod"],
+    },
+    { name: "AFU (A Future Unbound)", roles: ["dev", "mod"] },
+    {
+      name: "title unavailable",
+      url: "https://www.roblox.com/games/72566318542858/Title-Unavailable",
+      roles: ["actor"],
+    },
+    { name: "AOT Birdcage CCRP", roles: [] },
+    { name: "LARP (Limbus Roleplay)", roles: [] },
+  ],
 
   // friends.exe
   shoutouts: ["Bleach Primordial", '"goodnight guys"', "The Last Call"],
@@ -59,6 +97,13 @@ window.SITE = {
   // shown in profile.exe and the terminal's `links` command, e.g.
   // { label: "github", url: "https://github.com/gilsonthgreat" },
   links: [],
+
+  // the visit counter at the top of the screen, kept by abacus (a free counting api). hit adds one and returns the
+  // total, get only reads it. remove this to hide the counter
+  visits: {
+    hit: "https://abacus.jasoncameron.dev/hit/gilsonthgreat-gil/visits",
+    get: "https://abacus.jasoncameron.dev/get/gilsonthgreat-gil/visits",
+  },
 
   music: {
     // played in order, then back to the top. youtubeId is the part after watch?v= in a YouTube link;

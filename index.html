@@ -88,6 +88,12 @@
         <ellipse cx="14.7" cy="7" rx="1.6" ry="2.3" transform="rotate(8 14.7 7)" />
         <ellipse cx="18.5" cy="11.5" rx="1.6" ry="2.2" transform="rotate(25 18.5 11.5)" />
       </symbol>
+      <symbol id="i-gamepad" viewBox="0 0 24 24">
+        <path
+          d="M7.5 7h9a4.5 4.5 0 0 1 4.4 3.6l.9 4.8a2.6 2.6 0 0 1-4.6 2.1L15.3 15H8.7l-1.9 2.5a2.6 2.6 0 0 1-4.6-2.1l.9-4.8A4.5 4.5 0 0 1 7.5 7z"
+        />
+        <path d="M7.5 9.8v3M6 11.3h3M15.6 10.6h.01M17.4 12.4h.01" />
+      </symbol>
       <symbol id="i-link" viewBox="0 0 24 24">
         <path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1" />
         <path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1" />
@@ -131,6 +137,11 @@
         <div class="boot-log" id="boot-log"></div>
         <p class="boot-skip">click or press any key to skip</p>
       </div>
+    </div>
+
+    <div class="visits" id="visits" role="status" hidden>
+      <span class="dot" aria-hidden="true"></span><span class="visits-label">visitors</span>
+      <span class="visits-digits" id="visits-digits"></span>
     </div>
 
     <main id="desktop">
@@ -178,8 +189,8 @@
             <button type="button" class="action" data-open="gallery">
               <svg class="ico" aria-hidden="true"><use href="#i-image" /></svg>gallery
             </button>
-            <button type="button" class="action" data-open="chess">
-              <svg class="ico" aria-hidden="true"><use href="#i-chess" /></svg>chess
+            <button type="button" class="action" data-open="projects">
+              <svg class="ico" aria-hidden="true"><use href="#i-gamepad" /></svg>projects
             </button>
           </div>
           <div class="profile-links" id="profile-links" hidden></div>
@@ -365,12 +376,19 @@
         </div>
       </section>
 
+      <section class="window" data-app="projects" data-title="projects.exe" data-icon="i-gamepad" hidden>
+        <div class="window-body projects">
+          <p class="section-label projects-head">games i've worked on <span id="project-counts"></span></p>
+          <div class="project-groups" id="project-groups"></div>
+        </div>
+      </section>
+
       <section class="window" data-app="zoo" data-title="zoo.exe" data-icon="i-paw" hidden>
         <div class="window-body zoo">
           <p class="zoo-intro">
             <span id="zoo-count"></span> animals live here, and a different few come out each visit. pick one up and
-            carry it around (try dropping it on a window), click to boop, and right-click (or long-press on a phone) to
-            read about it.
+            carry it around (try dropping it on a window), click to boop, and right-click one (or long-press on a phone)
+            to have it follow you or to read about it.
           </p>
           <div class="zoo-grid" id="zoo-grid"></div>
         </div>
@@ -385,6 +403,19 @@
     </main>
 
     <div id="critters" aria-hidden="true"></div>
+
+    <div class="critter-menu" id="critter-menu" role="menu" aria-labelledby="critter-menu-name" hidden>
+      <p class="critter-menu-name" id="critter-menu-name"></p>
+      <button type="button" role="menuitem" data-act="follow">
+        <svg class="ico" aria-hidden="true"><use href="#i-paw" /></svg><span></span>
+      </button>
+      <button type="button" role="menuitem" data-act="bio">
+        <svg class="ico" aria-hidden="true"><use href="#i-file" /></svg><span></span>
+      </button>
+      <button type="button" role="menuitem" data-act="home">
+        <svg class="ico" aria-hidden="true"><use href="#i-close" /></svg><span>everyone stop following</span>
+      </button>
+    </div>
 
     <div class="bio-card" id="bio-card" role="dialog" aria-labelledby="bio-name" hidden>
       <div class="bio-head">
@@ -451,6 +482,7 @@
     <script src="js/core.js"></script>
     <script src="js/desktop.js"></script>
     <script src="js/content.js"></script>
+    <script src="js/visits.js"></script>
     <script src="js/sky.js"></script>
     <script src="js/cursor.js"></script>
     <script src="js/zoo.js"></script>

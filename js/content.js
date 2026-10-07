@@ -47,7 +47,20 @@
   }
 
   function dniRows() {
-    return [[span("# dni.txt", "e-h")], [], ...site.dni.map((line) => [span(line, "e-p")])];
+    const { criteria, notes, source } = site.dni;
+    const rows = [[span("# dni.txt", "e-h")], [], [span("## basic dni criteria", "e-h")]];
+    for (const line of criteria) rows.push([span(line, "e-li")]);
+    for (const note of notes) rows.push([], [span(note, "e-p")]);
+    if (source) {
+      const link = el("a", {
+        href: source,
+        target: "_blank",
+        rel: "noopener",
+        text: source.replace(/^https?:\/\/|\/$/g, ""),
+      });
+      rows.push([], [el("span", { class: "e-dim" }, ["criteria from ", link])]);
+    }
+    return rows;
   }
 
   GIL.files = { "about_me.txt": aboutRows, "dni.txt": dniRows };
@@ -95,6 +108,45 @@
     void list.offsetWidth;
     list.classList.add("is-filled");
   });
+
+  // grouped by what was done on each: dev + mod first, then dev, mod, actor, and anything with no role last
+  function renderProjects() {
+    const ROLES = ["dev", "mod", "actor"];
+    const groups = new Map();
+    for (const project of site.projects) {
+      const roles = ROLES.filter((role) => project.roles.includes(role));
+      const key = roles.join(" + ");
+      if (!groups.has(key)) groups.set(key, []);
+      groups.get(key).push(project);
+    }
+    const rank = (key) => (key ? ["dev + mod", "dev", "mod", "actor"].indexOf(key) + 1 || 5 : 6);
+    const sorted = [...groups].sort(([a], [b]) => rank(a) - rank(b));
+    const count = (role) => site.projects.filter((p) => p.roles.includes(role)).length;
+    $("#project-counts").textContent = ROLES.filter(count)
+      .map((role) => `${count(role)} ${role}`)
+      .join(" · ");
+    $("#project-groups").replaceChildren(
+      ...sorted.map(([key, projects]) =>
+        el("section", { class: "project-group" }, [
+          el("h3", { class: "project-role" }, [span(key || "also part of"), span(projects.length, "project-count")]),
+          el(
+            "ul",
+            { class: "project-list" },
+            projects.map((project) =>
+              el("li", {}, [
+                project.url
+                  ? el("a", { class: "project", href: project.url, target: "_blank", rel: "noopener" }, [
+                      span(project.name, "project-name"),
+                      el("span", { class: "project-go" }, ["roblox", icon("i-external")]),
+                    ])
+                  : el("span", { class: "project" }, [span(project.name, "project-name")]),
+              ]),
+            ),
+          ),
+        ]),
+      ),
+    );
+  }
 
   function setupGallery() {
     const img = $("#gallery-img");
@@ -168,6 +220,7 @@
   renderFile("dni", dniRows());
   renderFriends();
   renderSkills();
+  renderProjects();
   setupGallery();
   setupCardTilt();
 

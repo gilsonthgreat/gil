@@ -5,7 +5,8 @@ build step.
 
 - **profile.exe**: avatar, pronouns, age, timezone, roots, and a card that tilts in 3D under the cursor
 - **terminal**: a small shell. Try `help`, `neofetch`, `cat about_me.txt`, `bio otter`, `open chess`, `objection`
-- **about_me.txt**, **dni.txt**: read-only text files
+- **about_me.txt**, **dni.txt**: read-only text files; dni.txt has the basic DNI criteria
+- **projects.exe**: Roblox games gil has worked on, grouped by role (dev + mod, dev, actor) with links
 - **friends.exe**: shoutouts on a spinning 3D carousel
 - **skills.exe**: skill levels as 3D segmented bars
 - **gallery.exe**: a slideshow of images or gifs
@@ -15,7 +16,8 @@ build step.
 - **flappy.exe**: a flappy bird clone with parallax scenery
 - **zoo.exe**: all 58 animals, each with a short bio
 
-Windows can be dragged by their title bars and resized from the right edge, the bottom edge or the corner grip.
+Windows can be dragged by their title bars and resized from the right edge, the bottom edge or the corner grip. A visit
+counter sits at the top middle of the screen.
 
 Around the windows: a dot cursor with a trailing ring, birds and shooting stars, a wireframe planet, and a habitat of
 animals, a different set each visit. They wander the taskbar and the tops of open windows, greet each other, play-fight,
@@ -23,20 +25,31 @@ chase, and nap in piles (more of them at night). Birds and bugs fly around and p
 now and then, and a sloth hangs from the top of the screen or the bottom of a window.
 
 Any animal can be picked up and carried: drop it on a window and it lives up there, riding along when the window is
-dragged and falling off when it's closed. Fling it and it arcs through the air. A click boops it; right-click, or
-long-press on a phone, shows its bio. The animals can be hidden from the start menu or with `pets` in the terminal.
-Visitors who ask their system for reduced motion get a calmer page with the animals off.
+dragged and falling off when it's closed. Fling it and it arcs through the air. A click boops it.
+
+Right-click an animal (long-press on a phone) for its menu: its bio, or "follow me". A follower runs to keep up behind
+the cursor; when the cursor stops it comes up to sniff it and pounce at it, and lies down next to it if it stays still.
+Flying animals circle the cursor at a distance instead. None follow until asked, and "stop following" sends one back
+down. The animals can be hidden from the start menu or with `pets` in the terminal. Visitors who ask their system for
+reduced motion get a calmer page with the animals off.
 
 ## Editing
 
 All the text lives in [`config.js`](config.js): name, handle, pronouns, age, timezone, roots (flags), the about-me lines
-and likes, DNI, shoutouts, skills, gallery images, links and the music. To change the profile picture, replace
-`assets/avatar.png` with a square image. Gallery images go in `assets/gallery/` and are listed under `gallery` in
-`config.js`; animated gifs work there too.
+and likes, DNI, shoutouts, skills, projects, gallery images, links, the visit counter and the music. To change the
+profile picture, replace `assets/avatar.png` with a square image. Gallery images go in `assets/gallery/` and are listed
+under `gallery` in `config.js`; animated gifs work there too.
 
 The animals and their bios are in [`animals.js`](animals.js). Each one needs a matching picture in `assets/animals/`.
 Who likes to fight, who naps in piles, who chases whom, and the sounds they make are lists at the top of
 [`js/habitat.js`](js/habitat.js).
+
+Each entry in `projects` has a name, an optional Roblox link and its roles (`"dev"`, `"mod"`, `"actor"`); projects.exe
+groups them by role, with ones that have no role listed last.
+
+The visit counter uses [Abacus](https://abacus.jasoncameron.dev), a free counting API, at the two URLs under `visits`
+in `config.js`. Each visit counts once per browser session, and the site running on `localhost` only reads the number.
+If the service can't be reached the counter stays hidden; remove `visits` to turn it off.
 
 The music is `music.playlist` in `config.js`: one entry per song, using the part after `watch?v=` in a YouTube link,
 played in order and then from the top again. Browsers don't allow sound until a visitor clicks or presses a key, so it
@@ -63,26 +76,27 @@ Any static host works. Two free options:
 
 ## Layout
 
-| file               | what it does                                                             |
-| ------------------ | ------------------------------------------------------------------------ |
-| `index.html`       | markup for the windows, taskbar, start menu and bio card                 |
-| `style.css`        | colours, fonts, layout and animation                                     |
-| `config.js`        | site text and settings                                                   |
-| `animals.js`       | the animals: size, how they move, and their bios                         |
-| `vendor/chess.js`  | chess.js 0.10.3, the chess rules                                         |
-| `js/core.js`       | the `GIL` namespace: DOM and storage helpers, ASCII logo                 |
-| `js/desktop.js`    | window management, desktop icons, taskbar, start menu, boot              |
-| `js/content.js`    | fills the windows from `config.js`: about, dni, friends, skills, gallery |
-| `js/sky.js`        | stars, planet, birds and shooting stars                                  |
-| `js/cursor.js`     | the dot cursor                                                           |
-| `js/zoo.js`        | the animal bio card and zoo.exe                                          |
-| `js/critters.js`   | one animal on screen: its sprite and how it's posed each frame           |
-| `js/habitat.js`    | what the animals do: walking, fights, naps, flying, carrying             |
-| `js/music.js`      | the YouTube player and its controls                                      |
-| `js/terminal.js`   | the shell and its commands                                               |
-| `js/sysmon.js`     | the live graphs and clocks                                               |
-| `js/chess-game.js` | the chess board and the bot (minimax with alpha-beta)                    |
-| `js/flappy.js`     | the flappy game                                                          |
+| file               | what it does                                                                       |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| `index.html`       | markup for the windows, taskbar, start menu and bio card                           |
+| `style.css`        | colours, fonts, layout and animation                                               |
+| `config.js`        | site text and settings                                                             |
+| `animals.js`       | the animals: size, how they move, and their bios                                   |
+| `vendor/chess.js`  | chess.js 0.10.3, the chess rules                                                   |
+| `js/core.js`       | the `GIL` namespace: DOM and storage helpers, ASCII logo                           |
+| `js/desktop.js`    | window management, desktop icons, taskbar, start menu, boot                        |
+| `js/content.js`    | fills the windows from `config.js`: about, dni, friends, skills, projects, gallery |
+| `js/visits.js`     | the visit counter                                                                  |
+| `js/sky.js`        | stars, planet, birds and shooting stars                                            |
+| `js/cursor.js`     | the dot cursor                                                                     |
+| `js/zoo.js`        | the animal bio card and zoo.exe                                                    |
+| `js/critters.js`   | one animal on screen: its sprite and how it's posed each frame                     |
+| `js/habitat.js`    | what the animals do: walking, fights, naps, flying, carrying, following            |
+| `js/music.js`      | the YouTube player and its controls                                                |
+| `js/terminal.js`   | the shell and its commands                                                         |
+| `js/sysmon.js`     | the live graphs and clocks                                                         |
+| `js/chess-game.js` | the chess board and the bot (minimax with alpha-beta)                              |
+| `js/flappy.js`     | the flappy game                                                                    |
 
 The scripts load in the order listed and share state through `window.GIL`. Windows announce `window:open` and
 `window:hide` events on `document`, which the games and graphs use to run only while they're visible.

@@ -137,6 +137,58 @@ a {
   z-index: 1;
 }
 
+/* the visit counter, top middle. it sits over the animals so it stays readable, and lets clicks through */
+.visits {
+  position: fixed;
+  top: 6px;
+  left: 50%;
+  z-index: 850;
+  translate: -50% 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 3px 3px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: var(--glass);
+  box-shadow:
+    0 10px 24px -12px rgba(0, 0, 0, 0.8),
+    0 0 26px -10px rgba(176, 124, 255, 0.5);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  pointer-events: none;
+  animation: pop 0.5s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.visits .dot {
+  width: 6px;
+  height: 6px;
+}
+
+.visits-label {
+  font: 10px var(--font-pixel);
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.visits-digits {
+  display: flex;
+  gap: 2px;
+}
+
+/* split-flap style: a darker top half over a lighter bottom half */
+.visits-digit {
+  width: 1.4em;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #05020c 0 49%, #150b2c 51% 100%);
+  box-shadow: inset 0 0 0 1px rgba(207, 174, 255, 0.16);
+  font: 600 13px/1.45 var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--mist);
+  text-shadow: 0 0 7px rgba(236, 124, 245, 0.75);
+}
+
 /* fills a column top to bottom, then starts a second one on short screens */
 .icons {
   position: absolute;
@@ -297,7 +349,7 @@ a {
   width: 440px;
 }
 .window[data-app="dni"] {
-  width: 360px;
+  width: 420px;
 }
 .window[data-app="sysmon"] {
   width: 360px;
@@ -312,6 +364,9 @@ a {
 }
 .window[data-app="flappy"] {
   width: 326px;
+}
+.window[data-app="projects"] {
+  width: 400px;
 }
 .window[data-app="terminal"] {
   width: 680px;
@@ -1270,7 +1325,7 @@ input[type="range"]:disabled {
 }
 
 .e-li::before {
-  content: "-";
+  content: ">";
   color: var(--magenta);
 }
 
@@ -1546,7 +1601,8 @@ input[type="range"]:disabled {
   color: var(--muted);
 }
 
-.start-menu button {
+.start-menu button,
+.critter-menu button {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1560,7 +1616,8 @@ input[type="range"]:disabled {
   color: var(--lilac);
 }
 
-.start-menu button .ico {
+.start-menu button .ico,
+.critter-menu button .ico {
   width: 17px;
   height: 17px;
   stroke: url(#grad);
@@ -1568,7 +1625,9 @@ input[type="range"]:disabled {
 }
 
 .start-menu button:hover,
-.start-menu button:focus-visible {
+.start-menu button:focus-visible,
+.critter-menu button:hover,
+.critter-menu button:focus-visible {
   background: var(--glass-hi);
   color: var(--mist);
 }
@@ -2221,6 +2280,10 @@ select {
   transition: filter 0.4s;
 }
 
+.critter.is-following {
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.5)) drop-shadow(0 0 5px rgba(176, 124, 255, 0.8));
+}
+
 .critter.is-asleep {
   filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.5)) brightness(0.78) saturate(0.85);
 }
@@ -2239,7 +2302,147 @@ select {
   filter: drop-shadow(0 14px 8px rgba(0, 0, 0, 0.4));
 }
 
-/* the bio you get by right-clicking an animal */
+/* projects.exe */
+.projects {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 14px 16px 16px;
+}
+
+.projects-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+}
+
+#project-counts {
+  color: var(--faint);
+}
+
+.project-groups {
+  display: grid;
+  gap: 16px;
+}
+
+.project-group {
+  display: grid;
+  gap: 6px;
+}
+
+.project-role {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font: 500 12px var(--font-mono);
+  color: var(--violet);
+}
+
+.project-role::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--line-strong), transparent);
+}
+
+.project-count {
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+
+.project-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.project {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(7, 4, 16, 0.4);
+  font-size: 12.5px;
+  color: var(--lilac);
+  text-decoration: none;
+}
+
+a.project {
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    transform 0.15s;
+}
+
+a.project:hover,
+a.project:focus-visible {
+  border-color: var(--line-strong);
+  background: var(--glass-hi);
+  color: var(--mist);
+  transform: translateX(3px);
+}
+
+.project-name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.project-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex: none;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.project-go .ico {
+  width: 13px;
+  height: 13px;
+}
+
+a.project:hover .project-go {
+  color: var(--magenta);
+}
+
+/* right-clicking an animal */
+.critter-menu {
+  position: fixed;
+  z-index: 960;
+  width: 220px;
+  display: grid;
+  gap: 2px;
+  padding: 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--glass);
+  box-shadow:
+    0 24px 60px -16px rgba(0, 0, 0, 0.8),
+    0 0 40px -12px rgba(176, 124, 255, 0.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+  animation: pop 0.2s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.critter-menu-name {
+  margin: 2px 10px 4px;
+  font: 10px var(--font-pixel);
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+
+/* the bio you get from an animal's menu */
 .bio-card {
   position: fixed;
   z-index: 960;
@@ -2541,6 +2744,15 @@ select {
     flex-direction: column;
     gap: 16px;
     padding: 16px 16px calc(var(--taskbar-h) + env(safe-area-inset-bottom, 0px) + 24px);
+  }
+
+  .visits {
+    position: relative;
+    top: auto;
+    left: auto;
+    translate: none;
+    width: fit-content;
+    margin: 14px auto 0;
   }
 
   .icons {

@@ -60,8 +60,13 @@
   let nextFlock = 0;
   let surfaces = new Map(); // things to stand on: the floor and the top edge of each open window
   let undersides = []; // things to hang from: the top of the screen and the bottom edge of each window
+  let followers = [];
 
   const all = () => [...walkers, ...flyers, ...hangers, ...flock];
+  const following = () => all().filter((c) => c.task.kind === "follow");
+
+  // where the cursor (or the last touch) is and which way it's heading, for the animals following it
+  const pointer = { x: window.innerWidth / 2, y: window.innerHeight / 2, dx: 1, dy: 0, movedAt: -Infinity };
 
   function updateWorld() {
     const width = window.innerWidth;
@@ -239,6 +244,7 @@
   function updateWalker(c, dt, now) {
     const task = c.task;
     c.nudge = 0;
+    if (task.kind === "follow") return updateFollower(c, dt, now);
     c.moving = false;
     if (task.kind === "held") return;
     if (task.kind === "fall") return updateFall(c, dt, now);
@@ -374,6 +380,7 @@
 
   function updateFlyer(c, dt, now) {
     const task = c.task;
+    if (task.kind === "follow") return updateFollower(c, dt, now);
     if (task.kind === "held") return;
     if (task.kind === "perch") {
       const s = surfaces.get(c.surface);
@@ -455,6 +462,7 @@
 
   function updateHanger(c, dt, now) {
     const task = c.task;
+    if (task.kind === "follow") return updateFollower(c, dt, now);
     if (task.kind === "held") return;
     if (task.kind === "climb") {
       const u = undersideAbove(c);
@@ -480,12 +488,190 @@
     }
   }
 
+  /* ---- following the cursor ---- */
+
+  function follow(c, now) {
+    leave(c, now);
+    if (flock.includes(c)) {
+      flock = flock.filter((o) => o !== c);
+      flyers.push(c);
+    }
+    const gait = c.animal.gait;
+    c.surface = null;
+    c.task = {
+      kind: "follow",
+      state: "trail", // trail: keeping up; inspect: checking out the still cursor; rest: lying down next to it
+      lag: rand(0, 50), // how far back it hangs, so a few followers spread out
+      side: chance(0.5) ? 1 : -1, // which side of the cursor's path it keeps to
+      spin: chance(0.5) ? 1 : -1, // which way flyers circle the cursor
+      radius: 58 + c.size + rand(0, 30),
+    };
+    c.setMode(gait === "fly" ? "fly" : gait === "hang" ? "climb" : "walk", now);
+    c.el.classList.add("is-following");
+    c.hop(now);
+    say(c, "heart");
+  }
+
+  function unfollow(c, now) {
+    c.el.classList.remove("is-following");
+    if (c.animal.gait === "fly") planFlight(c, now);
+    else if (c.animal.gait === "hang") c.task = { kind: "climb" };
+    else fall(c, c.vx * 0.3, c.vy * 0.3, now); // back down to whatever is underneath
+  }
+
+  // checking out the cursor: a puzzled "?", its own sound, a pounce, or going round to look from the other side
+  function inspect(c, task, now) {
+    const r = Math.random();
+    if (r < 0.3) say(c, "huh");
+    else if (r < 0.5) say(c, SAYS[c.animal.id] ? "word" : "heart", SAYS[c.animal.id]);
+    else if (r < 0.8) c.hop(now);
+    else task.look *= -1;
+  }
+
+  function updateFollower(c, dt, now) {
+    const task = c.task;
+    const s = dt / 1000;
+    const flying = c.animal.gait === "fly";
+    const sloth = c.animal.gait === "hang";
+    const still = !sloth && now - pointer.movedAt > 450;
+    const centre = c.center();
+    let tx;
+    let ty;
+    if (flying) {
+      // circles the cursor from wherever it is, so it goes round it rather than across it; now and then turns back
+      if (chance(s * 0.15)) task.spin *= -1;
+      const angle = Math.atan2((centre.y - pointer.y) / 0.6, centre.x - pointer.x) + task.spin * 0.6;
+      tx = pointer.x + Math.cos(angle) * task.radius;
+      ty = pointer.y + Math.sin(angle) * task.radius * 0.6;
+    } else if (!still) {
+      if (task.state === "rest") say(c, "bang"); // woken up
+      task.state = "trail";
+      // a spot back along the way the cursor is going, a little off to one side
+      const back = c.size * 0.8 + 26 + task.lag;
+      tx = pointer.x - pointer.dx * back - pointer.dy * task.side * 14;
+      ty = pointer.y - pointer.dy * back + pointer.dx * task.side * 14;
+    } else {
+      if (task.state === "trail") {
+        task.state = "inspect";
+        task.since = now;
+        task.look = Math.sign(centre.x - pointer.x) || 1; // stays on the side it came from
+        task.nextAct = now + rand(900, 1800);
+      }
+      if (task.state === "inspect" && now - task.since > 9000) {
+        task.state = "rest";
+        task.nextZ = now + 1500;
+      }
+      // nose right up to the cursor without touching it
+      tx = pointer.x + task.look * (c.size * 0.5 + 10);
+      ty = pointer.y + c.size * 0.15;
+    }
+    if (!flying) {
+      // don't pile up on other followers
+      for (const o of followers) {
+        if (o === c || o.animal.gait === "fly") continue;
+        const other = o.center();
+        const gap = (c.size + o.size) * 0.45;
+        const d = Math.hypot(centre.x - other.x, centre.y - other.y) || 1;
+        if (d < gap) {
+          tx += ((centre.x - other.x) / d) * (gap - d);
+          ty += ((centre.y - other.y) / d) * (gap - d);
+        }
+      }
+    }
+    const half = c.size / 2;
+    tx = Math.max(half, Math.min(window.innerWidth - half, tx));
+    ty = Math.max(half, Math.min(ground() - half, ty));
+
+    // sprints when far behind and eases in as it gets close
+    const dx = tx - centre.x;
+    const dy = ty - centre.y;
+    const distance = Math.hypot(dx, dy);
+    const want = Math.min(sloth ? 40 : flying ? 560 : 820, distance * (flying ? 4 : 6));
+    const grip = Math.min(1, s * (flying ? 5 : 9));
+    c.vx += ((distance ? (dx / distance) * want : 0) - c.vx) * grip;
+    c.vy += ((distance ? (dy / distance) * want : 0) - c.vy) * grip;
+    const speed = Math.hypot(c.vx, c.vy);
+    c.moving = speed > 14;
+    c.phase += (speed * s) / Math.max(4, c.size * 0.14);
+    let x = centre.x + c.vx * s;
+    let y = centre.y + c.vy * s;
+    if (flying) {
+      // never closer than this, even when the cursor comes straight at it: it gets pushed along instead
+      const min = 44 + c.size * 0.6;
+      const away = Math.hypot(x - pointer.x, y - pointer.y) || 1;
+      if (away < min) {
+        x = pointer.x + ((x - pointer.x) / away) * min;
+        y = pointer.y + ((y - pointer.y) / away) * min;
+      }
+    }
+    c.x = x;
+    c.y = y + (c.hangs() ? -half : half);
+    if (task.state !== "trail" && !flying && distance < 30) c.flip = pointer.x > c.x ? -1 : 1;
+    else if (Math.abs(c.vx) > 30 && c.animal.gait !== "scuttle") c.flip = c.vx > 0 ? -1 : 1;
+
+    if (flying || sloth) return;
+    if (task.state === "rest" && distance < 20) {
+      c.setMode("sleep", now);
+      if (now > task.nextZ) {
+        task.nextZ = now + 1400;
+        say(c, "z");
+      }
+    } else if (task.state === "inspect" && distance < 20) {
+      c.setMode("sniff", now);
+      if (now > task.nextAct) {
+        task.nextAct = now + rand(1400, 2800);
+        inspect(c, task, now);
+      }
+    } else c.setMode("walk", now);
+  }
+
+  window.addEventListener(
+    "pointermove",
+    (e) => {
+      const dx = e.clientX - pointer.x;
+      const dy = e.clientY - pointer.y;
+      const d = Math.hypot(dx, dy);
+      if (d < 0.5) return;
+      // smoothed, so "behind the cursor" doesn't swing around with every wobble
+      const nx = pointer.dx * 0.85 + (dx / d) * 0.15;
+      const ny = pointer.dy * 0.85 + (dy / d) * 0.15;
+      const n = Math.hypot(nx, ny) || 1;
+      pointer.dx = nx / n;
+      pointer.dy = ny / n;
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+      pointer.movedAt = performance.now();
+    },
+    { passive: true },
+  );
+
+  // a click next to an animal that's checking out the cursor startles it
+  window.addEventListener(
+    "pointerdown",
+    (e) => {
+      pointer.x = e.clientX;
+      pointer.y = e.clientY;
+      if (e.target.critter) return;
+      const now = performance.now();
+      for (const c of followers) {
+        if (c.task.state === "trail" || c.animal.gait === "fly") continue;
+        if (Math.hypot(c.x - e.clientX, c.center().y - e.clientY) > 160) continue;
+        c.hop(now);
+        say(c, "bang");
+        c.task.state = "inspect";
+        c.task.since = now;
+      }
+    },
+    { passive: true },
+  );
+
   /* ---- picking animals up ---- */
 
   let press = null;
 
   function pickUp(c, now) {
     leave(c, now);
+    c.el.classList.remove("is-following"); // putting it down somewhere is a way of telling it to stay
     c.task = { kind: "held", from: c.task.kind };
     c.surface = null;
     c.setMode("held", now);
@@ -548,15 +734,16 @@
       x: e.clientX,
       y: e.clientY,
       at: now,
+      touch: e.pointerType !== "mouse",
       carrying: false,
       samples: [{ x: e.clientX, y: e.clientY, t: now }],
     };
     c.el.setPointerCapture(e.pointerId);
-    if (e.pointerType !== "mouse") {
-      // on touch screens, holding still on an animal opens its bio
+    if (press.touch) {
+      // on touch screens, holding still on an animal opens its menu
       press.timer = setTimeout(() => {
         if (press?.c === c && !press.carrying) {
-          GIL.zoo.showBio(c.animal, c.x + c.size / 2, c.center().y);
+          openMenu(c, press.x, press.y, true);
           press = null;
         }
       }, 550);
@@ -595,12 +782,72 @@
   layer.addEventListener("pointercancel", finishPress);
   layer.addEventListener("lostpointercapture", finishPress);
 
+  /* ---- the right-click menu ---- */
+
+  const menu = document.getElementById("critter-menu");
+  const [followItem, bioItem, everyoneItem] = menu.querySelectorAll("button");
+  let menuFor = null;
+  let menuAt = 0;
+
+  function openMenu(c, x, y, touch) {
+    GIL.zoo.hideBio();
+    menuFor = c;
+    menuAt = performance.now();
+    c.hop(menuAt);
+    document.getElementById("critter-menu-name").textContent = c.animal.name;
+    followItem.lastElementChild.textContent = c.task.kind === "follow" ? "stop following" : "follow me";
+    bioItem.lastElementChild.textContent = `about the ${c.animal.name.toLowerCase()}`;
+    everyoneItem.hidden = following().length < 2;
+    menu.hidden = false;
+    const width = menu.offsetWidth; // not the bounding box, which is mid pop-in animation here
+    const height = menu.offsetHeight;
+    // with a finger it opens above the touch, so lifting the finger doesn't land on an item
+    let left = x + 6;
+    let top = touch ? y - height - 28 : y + 6;
+    if (left + width > window.innerWidth - 8) left = x - width - 6;
+    if (top + height > window.innerHeight - 8) top = y - height - 6;
+    menu.style.left = `${Math.max(8, left)}px`;
+    menu.style.top = `${Math.max(8, top)}px`;
+  }
+
+  function closeMenu() {
+    menu.hidden = true;
+    menuFor = null;
+  }
+
   layer.addEventListener("contextmenu", (e) => {
     const c = e.target.critter;
     if (!c) return;
     e.preventDefault();
-    c.hop(performance.now());
-    GIL.zoo.showBio(c.animal, c.x + c.size / 2, c.center().y);
+    // some phones send this on a long press too; the press timer may already have opened the menu
+    if (menuFor === c && performance.now() - menuAt < 1000) return;
+    const touch = press?.c === c && press.touch;
+    if (touch) {
+      clearTimeout(press.timer);
+      press = null;
+    }
+    openMenu(c, e.clientX, e.clientY, touch);
+  });
+
+  menu.addEventListener("click", (e) => {
+    const item = e.target.closest("button");
+    const c = menuFor;
+    const now = performance.now();
+    if (!item || !c || now - menuAt < 300) return;
+    closeMenu();
+    if (!all().includes(c)) return; // gone since: flew off, or the animals were switched off
+    if (item === followItem) {
+      if (c.task.kind === "follow") unfollow(c, now);
+      else follow(c, now);
+    } else if (item === bioItem) GIL.zoo.showBio(c.animal, c.x + c.size / 2, c.center().y);
+    else for (const o of following()) unfollow(o, now);
+  });
+
+  document.addEventListener("pointerdown", (e) => {
+    if (!menu.hidden && !menu.contains(e.target)) closeMenu();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !menu.hidden) closeMenu();
   });
 
   /* ---- running it ---- */
@@ -641,6 +888,7 @@
     const dt = Math.min(64, now - last);
     last = now;
     updateWorld();
+    followers = following();
     for (const c of walkers) updateWalker(c, dt, now);
     for (const c of flyers) updateFlyer(c, dt, now);
     for (const c of hangers) updateHanger(c, dt, now);
@@ -661,7 +909,9 @@
     flyers = [];
     hangers = [];
     flock = [];
+    followers = [];
     press = null;
+    closeMenu();
     layer.replaceChildren();
   }
 
