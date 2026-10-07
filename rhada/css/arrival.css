@@ -1,0 +1,504 @@
+/* Rhada Evergarden: the arrival overlay. js/arrival.js sets --cx/--cy/--R/--r0/--sx (px) and data-beat 0-5 or "still". */
+
+#arrival {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  background: var(--void, #050403);
+  color: var(--ivory, #ede3d1);
+  contain: layout paint;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  --cx: 50vw;
+  --cy: 50vh;
+  --R: 72px;
+  --r0: 128px;
+  --sx: 460px;
+  --mk: 120px;
+  --a-ease: var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+html.arriving {
+  overflow: hidden;
+}
+
+html.arriving #arrival {
+  display: block;
+  /* safety net: if the script never takes over, the overlay steps aside */
+  animation: a-bail 0.6s 8s both;
+}
+
+html.arriving #arrival.is-on {
+  animation: none;
+}
+
+html.arriving:not(:has(#arrival.is-on)) {
+  animation: a-unlock 0s 8.6s both;
+}
+
+@keyframes a-bail {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes a-unlock {
+  to {
+    overflow: auto;
+  }
+}
+
+@keyframes a-in {
+  from {
+    opacity: 0;
+  }
+}
+
+#arrival .arrival-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#arrival .arrival-text {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+#arrival .arrival-text > * {
+  position: absolute;
+  white-space: nowrap;
+  opacity: 0;
+}
+
+#arrival .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- type ---------- */
+
+#arrival .a-loading,
+#arrival .a-label,
+#arrival .a-side--light,
+#arrival .a-skip {
+  font-family: var(--f-label, "Marcellus SC", Georgia, serif);
+  font-weight: 400;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+#arrival .a-epithet,
+#arrival .a-side--dark {
+  font-family: var(--f-display, "Bodoni Moda", "Bodoni 72", Didot, Georgia, serif);
+  font-style: italic;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+/* ---------- B1: the gate ---------- */
+
+#arrival .a-hairline {
+  left: 0;
+  right: 0;
+  top: var(--cy);
+  height: 1px;
+  margin-top: -0.5px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(201, 164, 106, 0.6) 20%,
+    rgba(201, 164, 106, 0.6) 80%,
+    transparent
+  );
+  transform: scaleX(0);
+  /* the line passes behind the planet, never across it */
+  --gap: linear-gradient(
+    90deg,
+    #000 calc(var(--cx) - var(--R) - 20px),
+    transparent calc(var(--cx) - var(--R) - 6px),
+    transparent calc(var(--cx) + var(--R) + 6px),
+    #000 calc(var(--cx) + var(--R) + 20px)
+  );
+  -webkit-mask-image: var(--gap);
+  mask-image: var(--gap);
+}
+
+/* sits just outside the dust ring's left edge, on the hairline */
+#arrival .a-loading {
+  right: calc(100% - var(--cx) + var(--r0) + 16px);
+  top: calc(var(--cy) - 21px);
+  margin-right: -0.4em;
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  color: var(--gold-hi, #e6c98f);
+}
+
+/* ---------- B2: the system ---------- */
+
+#arrival .a-label--left,
+#arrival .a-label--right {
+  top: calc(var(--cy) + 28px);
+  translate: -50% 0;
+  padding-left: 0.26em;
+  font-size: 11px;
+  letter-spacing: 0.26em;
+  color: var(--ash, #a89a86);
+  transform: translateY(6px);
+}
+
+#arrival .a-label--left {
+  left: calc(var(--cx) - var(--sx));
+}
+
+#arrival .a-label--right {
+  left: calc(var(--cx) + var(--sx));
+}
+
+#arrival .a-label--home {
+  left: var(--cx);
+  top: calc(var(--cy) + var(--R) + 20px);
+  translate: -50% 0;
+  padding-left: 0.3em;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--gold-hi, #e6c98f);
+  transform: translateY(6px);
+}
+
+#arrival .a-epithet {
+  left: var(--cx);
+  top: calc(var(--cy) + var(--R) + 42px);
+  translate: -50% 0;
+  font-size: 1.25rem;
+  color: var(--ivory, #ede3d1);
+  transform: translateY(6px);
+}
+
+/* ---------- B4: the atmosphere ---------- */
+
+#arrival .a-mark {
+  left: var(--cx);
+  top: var(--cy);
+  width: var(--mk);
+  height: var(--mk);
+  translate: -50% -50%;
+  overflow: visible;
+  color: var(--gold, #c9a46a);
+}
+
+#arrival .a-mark-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 0.9;
+  stroke-dasharray: 1 1;
+  stroke-dashoffset: 1.001;
+}
+
+#arrival .a-mark-fill {
+  fill: currentColor;
+  opacity: 0;
+}
+
+#arrival .a-mark-core {
+  fill: var(--void, #050403);
+  stroke: currentColor;
+  stroke-width: 0.9;
+  opacity: 0;
+}
+
+#arrival .a-side {
+  top: var(--cy);
+  translate: 0 -50%;
+  isolation: isolate;
+}
+
+/* a soft wisp behind each label keeps it legible on whatever the smoke does */
+#arrival .a-side::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(100% + 240px);
+  height: 240px;
+  translate: -50% -50%;
+  z-index: -1;
+}
+
+#arrival .a-side--light {
+  right: calc(100% - var(--cx) + 90px);
+  margin-right: -0.3em;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--bronze-ink, #6b4e2a);
+  transform: translateX(-10px);
+}
+
+#arrival .a-side--light::before {
+  background: radial-gradient(
+    closest-side,
+    rgba(241, 233, 218, 0.42),
+    rgba(241, 233, 218, 0.16) 55%,
+    rgba(241, 233, 218, 0)
+  );
+}
+
+#arrival .a-side--dark {
+  left: calc(var(--cx) + 90px);
+  padding-left: 74px;
+  font-size: 1.5rem;
+  color: var(--gold-hi, #e6c98f);
+  background:
+    radial-gradient(circle at 3px 50%, var(--gold-hi, #e6c98f) 0 2.5px, transparent 3px) no-repeat,
+    linear-gradient(90deg, var(--gold, #c9a46a), rgba(201, 164, 106, 0.35)) no-repeat 3px 50% / 57px 1px;
+  transform: translateX(10px);
+}
+
+#arrival .a-side--dark::before {
+  background: radial-gradient(closest-side, rgba(5, 4, 3, 0.36), rgba(5, 4, 3, 0.14) 55%, rgba(5, 4, 3, 0));
+}
+
+/* ---------- skip ---------- */
+
+#arrival .a-skip {
+  position: absolute;
+  z-index: 3;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  right: calc(16px + env(safe-area-inset-right, 0px));
+  min-height: 44px;
+  margin: 0;
+  padding: 0 16px 0 calc(16px + 0.28em);
+  border: 1px solid var(--line, #5a4127);
+  border-radius: 0;
+  background: rgba(5, 4, 3, 0.55);
+  color: var(--gold, #c9a46a);
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    border-color 0.2s,
+    color 0.2s;
+}
+
+#arrival.is-on .a-skip {
+  opacity: 1;
+  animation: a-in 0.4s 0.2s backwards;
+}
+
+#arrival .a-skip:hover {
+  border-color: var(--gold, #c9a46a);
+  color: var(--gold-hi, #e6c98f);
+}
+
+#arrival .a-skip:focus-visible {
+  outline: 2px solid var(--glow, #f6e7c1);
+  outline-offset: 3px;
+}
+
+/* ---------- the beats ---------- */
+
+#arrival[data-beat="1"] .a-loading {
+  opacity: 0.85;
+  transition: opacity 0.4s;
+}
+
+#arrival[data-beat="1"] .a-hairline {
+  opacity: 1;
+  transform: none;
+  transition: transform 0.6s 0.1s var(--a-ease);
+}
+
+#arrival[data-beat="2"] .a-hairline,
+#arrival[data-beat="still"] .a-hairline {
+  opacity: 1;
+  transform: none;
+}
+
+#arrival[data-beat="2"] .a-loading {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#arrival[data-beat="2"] :is(.a-label, .a-epithet) {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.4s 0.55s,
+    transform 0.4s 0.55s var(--a-ease);
+}
+
+#arrival[data-beat="still"] :is(.a-label, .a-epithet) {
+  opacity: 1;
+  transform: none;
+}
+
+#arrival[data-beat="3"] .a-hairline {
+  transform: none;
+  transition: opacity 0.4s;
+}
+
+#arrival[data-beat="3"] .a-label--left {
+  transform: translateX(-12vw);
+  transition:
+    opacity 0.4s,
+    transform 0.4s cubic-bezier(0.5, 0, 0.75, 0);
+}
+
+#arrival[data-beat="3"] .a-label--right {
+  transform: translateX(12vw);
+  transition:
+    opacity 0.4s,
+    transform 0.4s cubic-bezier(0.5, 0, 0.75, 0);
+}
+
+#arrival[data-beat="3"] :is(.a-label--home, .a-epithet) {
+  transform: none;
+  transition: opacity 0.3s;
+}
+
+#arrival[data-beat="4"] .a-mark,
+#arrival[data-beat="5"] .a-mark {
+  opacity: 1;
+}
+
+#arrival[data-beat="4"] .a-mark-line {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.5s 0.2s var(--ease-io, cubic-bezier(0.65, 0, 0.35, 1));
+}
+
+#arrival[data-beat="4"] :is(.a-mark-fill, .a-mark-core) {
+  opacity: 1;
+  transition: opacity 0.3s 0.6s;
+}
+
+#arrival[data-beat="4"] .a-side {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.5s 0.35s,
+    transform 0.7s 0.35s var(--a-ease);
+}
+
+/* B5: the smoke parts over the hero; the void goes, the canvas carries the last of it */
+#arrival[data-beat="5"] {
+  background: transparent;
+  opacity: 0;
+  transition: opacity 0.2s 0.8s;
+}
+
+#arrival[data-beat="5"] .a-mark-line {
+  stroke-dashoffset: 0;
+}
+
+#arrival[data-beat="5"] :is(.a-mark-fill, .a-mark-core) {
+  opacity: 1;
+}
+
+#arrival[data-beat="5"] .a-mark {
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#arrival[data-beat="5"] .a-side {
+  transform: none;
+  transition: opacity 0.3s;
+}
+
+/* the skip button steps aside as the hero's header comes in underneath it */
+#arrival[data-beat="5"] .a-skip,
+#arrival.is-out .a-skip {
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+/* skip, or the end of the reduced-motion still */
+#arrival.is-out {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s;
+}
+
+/* ---------- phone ---------- */
+
+@media (max-width: 639px) {
+  #arrival {
+    --mk: 88px;
+  }
+
+  #arrival .a-loading {
+    right: auto;
+    left: var(--cx);
+    top: calc(var(--cy) - var(--r0) - 28px);
+    translate: -50% -50%;
+    margin-right: 0;
+    padding-left: 0.4em;
+  }
+
+  /* moon labels go above the line on phones, clear of the home label */
+  #arrival .a-label--left,
+  #arrival .a-label--right {
+    top: auto;
+    bottom: calc(100% - var(--cy) + 34px);
+    translate: none;
+    padding-left: 0;
+    letter-spacing: 0.2em;
+    line-height: 1.5;
+  }
+
+  #arrival .a-label--left {
+    left: max(14px, calc(var(--cx) - var(--sx) - 12px));
+  }
+
+  #arrival .a-label--right {
+    left: auto;
+    right: max(14px, calc(100% - var(--cx) - var(--sx) - 12px));
+    margin-right: -0.2em;
+    text-align: right;
+  }
+
+  #arrival .a-num {
+    display: block;
+    color: var(--gold, #c9a46a);
+  }
+
+  #arrival .a-dot {
+    display: none;
+  }
+
+  #arrival .a-side--light {
+    right: calc(100% - var(--cx) + 30px);
+    top: calc(var(--cy) - var(--mk) / 2 - 22px);
+    translate: 0 -100%;
+  }
+
+  #arrival .a-side--dark {
+    left: calc(var(--cx) + 30px);
+    top: calc(var(--cy) + var(--mk) / 2 + 22px);
+    translate: 0 0;
+  }
+}
+
+@media (forced-colors: active) {
+  #arrival .a-hairline {
+    background: CanvasText;
+  }
+
+  #arrival .a-side::before {
+    display: none;
+  }
+}

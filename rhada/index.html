@@ -1,0 +1,1305 @@
+<!doctype html>
+<html lang="en" data-look="afro">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Rhada Evergarden</title>
+    <meta
+      name="description"
+      content="The character record of Rhada Evergarden, a true neutral dusk-keeper from Evergarden, the world of even days."
+    />
+    <meta name="theme-color" content="#0e0a07" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230e0a07'/%3E%3Cpath d='M32 10 L54 32 L32 54 L10 32 Z' fill='none' stroke='%23c9a46a' stroke-width='3'/%3E%3Cpath d='M32 10 L10 32 L32 54 Z' fill='%23c9a46a'/%3E%3Ccircle cx='32' cy='32' r='4' fill='%230e0a07' stroke='%23c9a46a' stroke-width='2'/%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..600&family=Marcellus+SC&family=Spectral:ital,wght@0,400;0,500;1,400&display=swap"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/arrival.css" />
+    <script>
+      // Runs before first paint so the right look, motion setting and intro are in place without a flash.
+      (function () {
+        var root = document.documentElement;
+        var get = function (store, key) {
+          try {
+            return window[store].getItem(key);
+          } catch (e) {
+            return null;
+          }
+        };
+        var params = new URLSearchParams(location.search);
+        var look = params.get("look") || get("localStorage", "rhada:look");
+        root.classList.add("js");
+        root.dataset.look = look === "down" ? "down" : "afro";
+        if (get("localStorage", "rhada:still") === "1") root.classList.add("still");
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) root.classList.add("reduce");
+        var firstVisit = get("sessionStorage", "rhada:arrived") !== "1";
+        if (!location.hash && (firstVisit || params.has("intro"))) root.classList.add("arriving");
+      })();
+    </script>
+    <script src="js/arrival.js" defer></script>
+    <script src="js/main.js" defer></script>
+  </head>
+  <body>
+    <svg class="sprite" aria-hidden="true" focusable="false">
+      <symbol id="even-mark" viewBox="0 0 64 64">
+        <path d="M32 8 L56 32 L32 56 L8 32 Z" fill="none" stroke="currentColor" stroke-width="1.5" />
+        <path d="M32 8 L8 32 L32 56 Z" fill="currentColor" />
+        <path d="M32 4 V60" fill="none" stroke="currentColor" stroke-width="1" />
+        <circle cx="32" cy="32" r="3.5" fill="var(--mark-core, #0e0a07)" stroke="currentColor" stroke-width="1" />
+        <path d="M26 2 L32 6 L38 2 M26 62 L32 58 L38 62" fill="none" stroke="currentColor" stroke-width="1.25" />
+      </symbol>
+      <symbol id="chev-stack" viewBox="0 0 16 22">
+        <path d="M2 3 L8 8 L14 3" fill="none" stroke="currentColor" stroke-width="1.25" opacity=".9" />
+        <path d="M2 9 L8 14 L14 9" fill="none" stroke="currentColor" stroke-width="1.25" opacity=".6" />
+        <path d="M2 15 L8 20 L14 15" fill="none" stroke="currentColor" stroke-width="1.25" opacity=".3" />
+      </symbol>
+      <symbol id="chev" viewBox="0 0 16 10">
+        <path d="M2 2 L8 8 L14 2" fill="none" stroke="currentColor" stroke-width="1.25" />
+      </symbol>
+      <symbol id="quote-open" viewBox="0 0 14 10">
+        <path d="M6 1 L1 5 L6 9 M13 1 L8 5 L13 9" fill="none" stroke="currentColor" stroke-width="1.25" />
+      </symbol>
+      <symbol id="quote-close" viewBox="0 0 14 10">
+        <path d="M1 1 L6 5 L1 9 M8 1 L13 5 L8 9" fill="none" stroke="currentColor" stroke-width="1.25" />
+      </symbol>
+      <symbol id="corner" viewBox="-2 -2 16 16">
+        <path d="M0 12 V0 H12" fill="none" stroke="currentColor" stroke-width="1" />
+        <path d="M0 -1.6 L1.6 0 L0 1.6 L-1.6 0 Z" fill="currentColor" />
+      </symbol>
+      <symbol id="ring-icon" viewBox="0 0 16 16">
+        <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1" />
+        <circle cx="8" cy="8" r="2.5" fill="none" stroke="currentColor" stroke-width="1" />
+        <circle cx="8" cy="2" r="1.4" fill="currentColor" />
+      </symbol>
+      <symbol id="index-icon" viewBox="0 0 16 20">
+        <path
+          d="M8 1 L11 4 L8 7 L5 4 Z M8 7 L11 10 L8 13 L5 10 Z M8 13 L11 16 L8 19 L5 16 Z"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.1"
+        />
+      </symbol>
+      <symbol id="glyph-1" viewBox="0 0 14 14">
+        <circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" stroke-width="1.25" />
+        <circle cx="7" cy="7" r="1.4" fill="currentColor" />
+      </symbol>
+      <symbol id="glyph-2" viewBox="0 0 14 14">
+        <path d="M7 1.5 L12.5 7 L7 12.5 L1.5 7 Z" fill="none" stroke="currentColor" stroke-width="1.25" />
+        <circle cx="7" cy="7" r="1.2" fill="currentColor" />
+      </symbol>
+      <symbol id="glyph-3" viewBox="0 0 14 14">
+        <path
+          d="M3 3.5 L7 7 L11 3.5 M3 7.5 L7 11 L11 7.5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.25"
+          stroke-linecap="round"
+        />
+      </symbol>
+      <symbol id="glyph-4" viewBox="0 0 14 14">
+        <path d="M7 2 V12 M2 7 H12" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" />
+      </symbol>
+      <symbol id="glyph-5" viewBox="0 0 14 14">
+        <circle cx="7" cy="3.5" r="1.5" fill="currentColor" />
+        <circle cx="3.2" cy="10" r="1.5" fill="currentColor" />
+        <circle cx="10.8" cy="10" r="1.5" fill="currentColor" />
+      </symbol>
+      <symbol id="glyph-6" viewBox="0 0 14 14">
+        <circle cx="7" cy="7" r="5.5" fill="none" stroke="currentColor" stroke-width="1.25" />
+        <path d="M7 1.5 A5.5 5.5 0 0 0 7 12.5 Z" fill="currentColor" />
+      </symbol>
+      <!-- watermarks inside the hero sun: rings for the afro look, wrap lines for the hair-down look -->
+      <symbol id="mark-rings" viewBox="0 0 240 240">
+        <g fill="none" stroke="currentColor" stroke-width="1.2">
+          <circle cx="120" cy="120" r="40" />
+          <circle cx="120" cy="120" r="58" stroke-dasharray="2 6" />
+          <circle cx="120" cy="120" r="76" />
+          <circle cx="120" cy="120" r="94" stroke-dasharray="2 6" />
+          <circle cx="120" cy="120" r="112" />
+        </g>
+      </symbol>
+      <!-- uneven spacing and weights so the lines read as hand-wound cloth. Patterns take their colour from here, not
+           from where they're used, hence a dark one (on the gold sun) and a light one (on the dark plate) -->
+      <pattern id="wraps-dark" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(-32)">
+        <path d="M0 0.5 H40 M0 13 H40 M0 34 H40" stroke="#6b4e2a" stroke-width="1" fill="none" />
+        <path d="M0 7 H40 M0 27 H40" stroke="#6b4e2a" stroke-width=".85" fill="none" />
+        <path d="M0 20 H40" stroke="#6b4e2a" stroke-width="1.2" fill="none" />
+      </pattern>
+      <pattern id="wraps-light" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(-32)">
+        <path d="M0 0.5 H40 M0 13 H40 M0 34 H40" stroke="#cfcbb8" stroke-width="1" fill="none" />
+        <path d="M0 7 H40 M0 27 H40" stroke="#cfcbb8" stroke-width=".85" fill="none" />
+        <path d="M0 20 H40" stroke="#cfcbb8" stroke-width="1.2" fill="none" />
+      </pattern>
+    </svg>
+
+    <a class="skip-link" href="#overview">Skip to the record</a>
+
+    <div id="arrival" role="dialog" aria-modal="true" aria-label="Arrival animation">
+      <canvas class="arrival-canvas" aria-hidden="true"></canvas>
+      <div class="arrival-text" aria-hidden="true">
+        <span class="a-hairline"></span>
+        <span class="a-loading">Loading</span>
+        <span class="a-label a-label--left"
+          ><span class="a-num">01</span><span class="a-dot"> · </span>The gold moon</span
+        >
+        <span class="a-label a-label--home">02 · Evergarden</span>
+        <span class="a-epithet">The world of even days</span>
+        <span class="a-label a-label--right"
+          ><span class="a-num">03</span><span class="a-dot"> · </span>The pale moon</span
+        >
+        <svg class="a-mark" viewBox="0 0 64 64">
+          <path class="a-mark-line" pathLength="1" d="M32 8 L56 32 L32 56 L8 32 Z" />
+          <path class="a-mark-line" pathLength="1" d="M32 4 V60" />
+          <path class="a-mark-line" pathLength="1" d="M26 2 L32 6 L38 2 M26 62 L32 58 L38 62" />
+          <path class="a-mark-fill" d="M32 8 L8 32 L32 56 Z" />
+          <circle class="a-mark-core" cx="32" cy="32" r="3.5" />
+        </svg>
+        <span class="a-side a-side--light">The even hour</span>
+        <span class="a-side a-side--dark">Fall in</span>
+      </div>
+      <button type="button" class="a-skip">Skip intro</button>
+      <p class="sr-only">Arriving at Evergarden. Press Escape or Skip intro to go straight to the record.</p>
+    </div>
+
+    <header class="site-header">
+      <a class="brand" href="#top" aria-label="Rhada Evergarden, top">
+        <svg class="brand-mark" aria-hidden="true"><use href="#even-mark" /></svg>
+        <span class="brand-name" aria-hidden="true">Rhada Evergarden</span>
+      </a>
+      <p class="now-reading" aria-hidden="true">
+        <span class="now-num">00</span> · <span class="now-label">Arrival</span>
+      </p>
+      <div class="head-tools">
+        <div class="beam beam--compact" role="radiogroup" aria-label="Rhada's look">
+          <span class="beam-arm" aria-hidden="true"></span>
+          <label class="beam-end beam-end--afro">
+            <input class="sr-only" type="radio" name="look-head" value="afro" />
+            <span class="node" aria-hidden="true"></span>
+            <span class="sr-only">Afro</span>
+          </label>
+          <label class="beam-end beam-end--down">
+            <input class="sr-only" type="radio" name="look-head" value="down" />
+            <span class="node" aria-hidden="true"></span>
+            <span class="sr-only">Hair down</span>
+          </label>
+        </div>
+        <button type="button" class="index-btn" aria-haspopup="dialog" aria-controls="index">
+          <svg aria-hidden="true"><use href="#index-icon" /></svg><span class="index-btn-text">Index</span>
+        </button>
+      </div>
+      <span class="read-progress" aria-hidden="true"></span>
+    </header>
+
+    <nav class="spine" aria-label="Record sections">
+      <span class="spine-fill" aria-hidden="true"></span>
+      <ol>
+        <li>
+          <a href="#overview" data-num="01"><span class="bead">01</span><span class="spine-label">Overview</span></a>
+        </li>
+        <li>
+          <a href="#record" data-num="02"><span class="bead">02</span><span class="spine-label">Record</span></a>
+        </li>
+        <li>
+          <a href="#looks" data-num="03"><span class="bead">03</span><span class="spine-label">Looks</span></a>
+        </li>
+        <li>
+          <a href="#personality" data-num="04"
+            ><span class="bead">04</span><span class="spine-label">Personality</span></a
+          >
+        </li>
+        <li class="spine-centre">
+          <a href="#alignment" data-num="05"><span class="bead">05</span><span class="spine-label">Alignment</span></a>
+        </li>
+        <li>
+          <a href="#homeworld" data-num="06"><span class="bead">06</span><span class="spine-label">Homeworld</span></a>
+        </li>
+        <li>
+          <a href="#history" data-num="07"><span class="bead">07</span><span class="spine-label">History</span></a>
+        </li>
+        <li>
+          <a href="#habits" data-num="08"
+            ><span class="bead">08</span><span class="spine-label">Habits &amp; likes</span></a
+          >
+        </li>
+        <li>
+          <a href="#words" data-num="09"
+            ><span class="bead">09</span><span class="spine-label">Quotes &amp; trivia</span></a
+          >
+        </li>
+      </ol>
+    </nav>
+
+    <main id="main">
+      <!-- hero: "this is him" -->
+      <section id="top" class="hero" aria-labelledby="hero-title" data-label="Arrival" data-num="00">
+        <div class="smoke hero-smoke hero-smoke--a" aria-hidden="true"></div>
+        <div class="smoke hero-smoke hero-smoke--b" aria-hidden="true"></div>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <p class="kicker hero-kicker">A character record from Evergarden</p>
+            <h1 id="hero-title" tabindex="-1">
+              <span class="sr-only">Rhada Evergarden</span>
+              <span class="h1-first" aria-hidden="true"
+                ><span>R</span><span>h</span><span>a</span><span>d</span><span>a</span></span
+              >
+              <span class="h1-last" aria-hidden="true">Evergarden</span>
+            </h1>
+            <span class="hairline hero-hairline" aria-hidden="true"></span>
+            <p class="tagline">Neither day nor night. The hour between.</p>
+            <div class="hero-actions">
+              <a class="btn" href="#overview">Read the record</a>
+              <button type="button" class="btn-text" data-replay>
+                <svg aria-hidden="true"><use href="#ring-icon" /></svg>Replay arrival
+              </button>
+            </div>
+          </div>
+
+          <div class="stage">
+            <div class="sun-glow" aria-hidden="true"></div>
+            <svg class="rings" viewBox="0 0 1020 1020" aria-hidden="true">
+              <circle class="ring ring--inner" cx="510" cy="510" r="370" pathLength="1" />
+              <g class="ring-turn">
+                <g class="ring-spin ring-spin--rev">
+                  <circle class="ring ring--ticks" cx="510" cy="510" r="430" />
+                </g>
+              </g>
+              <g class="ring-spin">
+                <circle class="ring ring--outer" cx="510" cy="510" r="508" pathLength="1" />
+                <circle class="ring-node" cx="510" cy="2" r="4" />
+                <circle class="ring-node" cx="1018" cy="510" r="4" />
+                <circle class="ring-node" cx="510" cy="1018" r="4" />
+                <circle class="ring-node" cx="2" cy="510" r="4" />
+              </g>
+            </svg>
+            <div class="sun" aria-hidden="true">
+              <svg class="watermark watermark--afro"><use href="#mark-rings" /></svg>
+              <svg class="watermark watermark--down"><rect width="100%" height="100%" fill="url(#wraps-dark)" /></svg>
+            </div>
+            <div class="horizon" aria-hidden="true"></div>
+            <div class="fig fig--afro">
+              <img
+                src="img/rhada-afro.webp"
+                width="295"
+                height="440"
+                decoding="async"
+                alt="Sketch of Rhada: dark brown skin and a big black afro, a loose lavender T-shirt with a pale print, his hand raised by his face, thin bracelets on his wrist."
+              />
+            </div>
+            <div class="fig fig--down">
+              <img
+                src="img/rhada-down.webp"
+                width="329"
+                height="603"
+                decoding="async"
+                alt="Sketch of Rhada kneeling, his black hair down in loose curls, wearing pale cloth wraps around his chest, forearms, hands, hips and thighs."
+              />
+            </div>
+          </div>
+
+          <dl class="glance">
+            <div>
+              <dt>Pronouns</dt>
+              <dd>He/him</dd>
+            </div>
+            <div>
+              <dt>Alignment</dt>
+              <dd><a href="#alignment">True neutral</a></dd>
+            </div>
+            <div>
+              <dt>Home</dt>
+              <dd><a href="#homeworld">Evergarden</a> <span class="glance-sub">Riverloom clan</span></dd>
+            </div>
+            <div>
+              <dt>Hair</dt>
+              <dd><a href="#looks">Afro or down</a></dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="hero-ground">
+          <div class="beam beam--large" role="radiogroup" aria-label="Rhada's look">
+            <span class="beam-arm" aria-hidden="true"></span>
+            <span class="beam-fulcrum" aria-hidden="true"
+              ><svg><use href="#chev" /></svg
+            ></span>
+            <label class="beam-end beam-end--afro">
+              <input class="sr-only" type="radio" name="look-hero" value="afro" />
+              <span class="node" aria-hidden="true"><span class="node-letter">A</span></span>
+              <span class="beam-label">Afro</span>
+            </label>
+            <label class="beam-end beam-end--down">
+              <input class="sr-only" type="radio" name="look-hero" value="down" />
+              <span class="node" aria-hidden="true"><span class="node-letter">B</span></span>
+              <span class="beam-label">Down</span>
+            </label>
+          </div>
+          <div class="look-captions">
+            <p class="look-caption look-caption--afro">
+              <span class="kicker">Look A · Afro</span
+              ><span class="look-caption-line">Lavender tee, thin bracelets</span>
+            </p>
+            <p class="look-caption look-caption--down">
+              <span class="kicker">Look B · Down</span
+              ><span class="look-caption-line">Loose curls, pale cloth wraps</span>
+            </p>
+          </div>
+          <a class="fall-in" href="#overview">
+            <span>Fall in</span>
+            <svg aria-hidden="true"><use href="#chev-stack" /></svg>
+          </a>
+        </div>
+      </section>
+
+      <!-- 01 -->
+      <section id="overview" class="band" aria-labelledby="overview-title" data-label="Overview" data-num="01">
+        <div class="reading">
+          <header class="band-head">
+            <span class="band-num" aria-hidden="true">01</span>
+            <h2 id="overview-title" tabindex="-1">
+              <span class="kicker">01 · Overview</span><span class="band-title">Who He Is</span>
+            </h2>
+            <p class="standfirst" data-draft>A dusk-keeper who would rather understand a thing than judge it.</p>
+            <div class="band-rule" aria-hidden="true"></div>
+          </header>
+          <div class="overview-body">
+            <span class="cloth-edge cloth-edge--left" aria-hidden="true"></span>
+            <span class="cloth-edge cloth-edge--right" aria-hidden="true"></span>
+            <p class="lede" data-draft data-reveal>
+              <span class="lede-open">Rhada Evergarden</span> is a seventeen-year-old dusk-keeper from Evergarden, the
+              world of even days, where night and day always last the same length.
+            </p>
+            <p data-draft data-reveal>
+              He belongs to the Riverloom clan, a people of weavers, growers and star-readers who keep their history by
+              heart.
+            </p>
+            <p data-reveal>
+              True neutral to the bone, he watches before he acts, weighs every side and rarely takes one, and stays
+              loyal to the way things are rather than to any cause. It is not coldness; he simply believes most things
+              find their level if they are given room, and he is very good at giving them room.
+            </p>
+          </div>
+          <a class="next" href="#record"
+            >Next · 02 Record<svg aria-hidden="true"><use href="#chev" /></svg
+          ></a>
+        </div>
+      </section>
+
+      <!-- 02 -->
+      <section id="record" class="band" aria-labelledby="record-title" data-label="Record" data-num="02">
+        <div class="wide">
+          <header class="band-head">
+            <span class="band-num" aria-hidden="true">02</span>
+            <h2 id="record-title" tabindex="-1">
+              <span class="kicker">02 · Record</span><span class="band-title">The Record</span>
+            </h2>
+            <p class="standfirst">Everything known about him, at a glance.</p>
+            <div class="band-rule" aria-hidden="true"></div>
+          </header>
+
+          <div class="record-card" data-reveal>
+            <svg class="corner corner--tl" aria-hidden="true"><use href="#corner" /></svg>
+            <svg class="corner corner--tr" aria-hidden="true"><use href="#corner" /></svg>
+            <svg class="corner corner--bl" aria-hidden="true"><use href="#corner" /></svg>
+            <svg class="corner corner--br" aria-hidden="true"><use href="#corner" /></svg>
+            <span class="chevron-strip record-strip" aria-hidden="true"></span>
+            <p class="banner banner--gold record-name">
+              <span class="banner-node" aria-hidden="true"
+                ><svg><use href="#even-mark" /></svg
+              ></span>
+              <span class="banner-text">Rhada Evergarden</span>
+            </p>
+            <div class="record-cols">
+              <div class="record-col">
+                <h3 class="group-title">Identity</h3>
+                <dl class="facts">
+                  <div id="fact-pronouns">
+                    <dt>Pronouns</dt>
+                    <dd>He/him</dd>
+                  </div>
+                  <div id="fact-alignment">
+                    <dt>Alignment</dt>
+                    <dd>
+                      <a href="#alignment"
+                        ><svg class="inline-mark" aria-hidden="true"><use href="#even-mark" /></svg>True neutral, very
+                        much so</a
+                      >
+                    </dd>
+                  </div>
+                  <div id="fact-temperament" data-draft>
+                    <dt>Temperament</dt>
+                    <dd>Watchful · even-tempered · unhurried</dd>
+                  </div>
+                  <div id="fact-role" data-draft>
+                    <dt>Role</dt>
+                    <dd>Dusk-keeper: a star-reader and keeper of the spoken record</dd>
+                  </div>
+                  <div id="fact-age" data-draft>
+                    <dt>Age</dt>
+                    <dd>Seventeen</dd>
+                  </div>
+                </dl>
+                <h3 class="group-title">Origin</h3>
+                <dl class="facts">
+                  <div id="fact-home" data-draft>
+                    <dt>Home world</dt>
+                    <dd><a href="#homeworld">Evergarden</a>, the world of even days</dd>
+                  </div>
+                  <div id="fact-clan" data-draft>
+                    <dt>Clan</dt>
+                    <dd>Riverloom</dd>
+                  </div>
+                  <div id="fact-born" data-draft>
+                    <dt>Born</dt>
+                    <dd>At the even hour, as day tipped into dark</dd>
+                  </div>
+                  <div id="fact-status">
+                    <dt>Status</dt>
+                    <dd>Record open</dd>
+                  </div>
+                </dl>
+              </div>
+              <div class="record-col">
+                <h3 class="group-title">Appearance</h3>
+                <dl class="facts">
+                  <div id="fact-skin">
+                    <dt>Skin</dt>
+                    <dd>Dark brown</dd>
+                  </div>
+                  <div id="fact-hair">
+                    <dt>Hair</dt>
+                    <dd>
+                      Thick black curls, worn two ways:
+                      <span class="hair-buttons">
+                        <button type="button" class="hair-btn" data-set-look="afro" aria-pressed="false">Afro</button>
+                        <button type="button" class="hair-btn" data-set-look="down" aria-pressed="false">Down</button>
+                      </span>
+                    </dd>
+                  </div>
+                  <div id="fact-height" data-draft>
+                    <dt>Height</dt>
+                    <dd>175 cm (5 ft 9 in), taller with the afro</dd>
+                  </div>
+                  <div id="fact-looks">
+                    <dt>Looks</dt>
+                    <dd>
+                      <a href="#look-afro">Look A, afro</a>: lavender tee, thin bracelets<br />
+                      <a href="#look-down">Look B, hair down</a>: pale cloth wraps
+                    </dd>
+                  </div>
+                  <div id="fact-signature">
+                    <dt>Signature</dt>
+                    <dd>Thin cord bracelets; pale undyed wraps</dd>
+                  </div>
+                </dl>
+              </div>
+            </div>
+          </div>
+          <a class="next" href="#looks"
+            >Next · 03 Looks<svg aria-hidden="true"><use href="#chev" /></svg
+          ></a>
+        </div>
+      </section>
+
+      <!-- 03 -->
+      <section id="looks" class="band" aria-labelledby="looks-title" data-label="Looks" data-num="03">
+        <div class="wide">
+          <header class="band-head">
+            <span class="band-num" aria-hidden="true">03</span>
+            <h2 id="looks-title" tabindex="-1">
+              <span class="kicker">03 · Looks</span><span class="band-title">Two Looks</span>
+            </h2>
+            <p class="standfirst" data-draft>Neither one is the real Rhada; both are.</p>
+            <div class="band-rule" aria-hidden="true"></div>
+          </header>
+
+          <div class="looks">
+            <figure class="plate-wrap" id="look-afro" data-reveal>
+              <div class="plate plate--afro">
+                <span class="plate-chip" aria-hidden="true">Shown</span>
+                <svg class="plate-watermark" aria-hidden="true"><use href="#mark-rings" /></svg>
+                <img
+                  src="img/rhada-afro.webp"
+                  width="295"
+                  height="440"
+                  loading="lazy"
+                  decoding="async"
+                  alt="Rhada with his hair in a big afro, wearing a loose lavender T-shirt, one hand raised to his cheek."
+                />
+                <span class="plate-num gild" aria-hidden="true">01</span>
+              </div>
+              <figcaption class="plate-text">
+                <span class="kicker">Look A</span>
+                <h3>Afro</h3>
+                <p data-draft>
+                  His everyday look, for days off the watch. He is usually caught like this mid-listen, head tilted and
+                  one hand raised to his cheek.
+                </p>
+                <dl class="facts facts--compact">
+                  <div>
+                    <dt>Hair</dt>
+                    <dd>Picked out into a full, rounded afro</dd>
+                  </div>
+                  <div>
+                    <dt>Wearing</dt>
+                    <dd>A loose lavender T-shirt with a pale printed graphic</dd>
+                  </div>
+                  <div>
+                    <dt>Details</dt>
+                    <dd>A few thin bracelets on one wrist</dd>
+                  </div>
+                </dl>
+                <button type="button" class="btn look-btn" data-set-look="afro" aria-pressed="false">
+                  <span class="look-btn-off">Show this look</span><span class="look-btn-on">Showing now</span>
+                </button>
+              </figcaption>
+            </figure>
+
+            <div class="looks-axis" aria-hidden="true">
+              <span class="axis-mark"
+                ><svg><use href="#even-mark" /></svg
+              ></span>
+            </div>
+
+            <figure class="plate-wrap" id="look-down" data-reveal>
+              <div class="plate plate--down">
+                <span class="plate-chip" aria-hidden="true">Shown</span>
+                <svg class="plate-watermark" aria-hidden="true">
+                  <rect width="100%" height="100%" fill="url(#wraps-light)" />
+                </svg>
+                <img
+                  src="img/rhada-down.webp"
+                  width="329"
+                  height="603"
+                  loading="lazy"
+                  decoding="async"
+                  alt="Rhada kneeling with his black hair down in loose curls, pale cloth wound around his chest, forearms, hands, hips and thighs."
+                />
+                <span class="plate-num gild" aria-hidden="true">02</span>
+              </div>
+              <figcaption class="plate-text">
+                <span class="kicker">Look B</span>
+                <h3>Hair down</h3>
+                <p data-draft>
+                  His look for watch days and gatherings. The wraps are practical, guarding skin from sun and sharp
+                  grass, and ceremonial, since each band goes on in a set order.
+                </p>
+                <dl class="facts facts--compact">
+                  <div>
+                    <dt>Hair</dt>
+                    <dd>Loose curls falling around his face to his shoulders</dd>
+                  </div>
+                  <div>
+                    <dt>Wearing</dt>
+                    <dd>Pale undyed cloth wound around his chest, forearms, hands, hips and thighs</dd>
+                  </div>
+                  <div data-draft>
+                    <dt>Details</dt>
+                    <dd>Kneels to work; keeps his eyes lowered while he listens</dd>
+                  </div>
+                </dl>
+                <button type="button" class="btn look-btn" data-set-look="down" aria-pressed="false">
+                  <span class="look-btn-off">Show this look</span><span class="look-btn-on">Showing now</span>
+                </button>
+              </figcaption>
+            </figure>
+          </div>
+          <a class="next" href="#personality"
+            >Next · 04 Personality<svg aria-hidden="true"><use href="#chev" /></svg
+          ></a>
+        </div>
+      </section>
+
+      <!-- 04 -->
+      <section id="personality" class="band" aria-labelledby="personality-title" data-label="Personality" data-num="04">
+        <div class="wide">
+          <header class="band-head">
+            <span class="band-num" aria-hidden="true">04</span>
+            <h2 id="personality-title" tabindex="-1">
+              <span class="kicker">04 · Personality</span><span class="band-title">His Nature</span>
+            </h2>
+            <p class="standfirst" data-draft>Calm, watchful and dry; kind without being a pushover.</p>
+            <div class="band-rule" aria-hidden="true"></div>
+          </header>
+
+          <div class="nature">
+            <div class="nature-traits">
+              <p data-draft data-reveal>
+                Calm, watchful and dry, Rhada is kind without being a pushover and honest without being harsh. His
+                patience can read as distance until you notice he remembers every word you said. He is warm in small,
+                practical ways: a hand on the rope, a seat left open, a question asked twice so you can answer it
+                properly.
+              </p>
+              <p class="label">Traits</p>
+              <ol class="traits" data-draft>
+                <li data-reveal>
+                  <span class="bead-node" aria-hidden="true"
+                    ><svg><use href="#glyph-1" /></svg
+                  ></span>
+                  <h3>Watchful</h3>
+                  <p>
+                    He listens to the whole of a thing before he answers any part of it. He notices who is tired, which
+                    way the wind is turning and what nobody is saying.
+                  </p>
+                </li>
+                <li data-reveal>
+                  <span class="bead-node" aria-hidden="true"
+                    ><svg><use href="#glyph-2" /></svg
+                  ></span>
+                  <h3>Even-tempered</h3>
+                  <p>
+                    Hard to anger and hard to flatter; praise and complaint get roughly the same nod. When a room gets
+                    loud, he gets quieter, and people tend to follow.
+                  </p>
+                </li>
+                <li data-reveal>
+                  <span class="bead-node" aria-hidden="true"
+                    ><svg><use href="#glyph-3" /></svg
+                  ></span>
+                  <h3>Fair, not soft</h3>
+                  <p>
+                    He will tell a friend they are wrong in front of the person they wronged, then help them both carry
+                    their things home.
+                  </p>
+                </li>
+                <li data-reveal>
+                  <span class="bead-node" aria-hidden="true"
+                    ><svg><use href="#glyph-4" /></svg
+                  ></span>
+                  <h3>Unhurried</h3>
+                  <p>
+                    He does not rush, and he will not be rushed into choosing. "Wait" is the word he uses most,
+                    sometimes a little too often.
+                  </p>
+                </li>
+                <li data-reveal>
+                  <span class="bead-node" aria-hidden="true"
+                    ><svg><use href="#glyph-5" /></svg
+                  ></span>
+                  <h3>Accepting</h3>
+                  <p>
+                    He would rather understand how something works than decide whether it should. His loyalty is to what
+                    is, not to what anyone wishes it were.
+                  </p>
+                </li>
+                <li data-reveal>
+                  <span class="bead-node" aria-hidden="true"
+                    ><svg><use href="#glyph-6" /></svg
+                  ></span>
+                  <h3>Quietly funny</h3>
+                  <p>
+                    His humour is dry, late and delivered with a straight face. Friends say you have to watch his eyes
+                    to know he is teasing.
+                  </p>
+                </li>
+              </ol>
+            </div>
+
+            <div class="nature-scales">
+              <p class="label">The scales</p>
+              <div class="scales" data-draft>
+                <div class="scale" role="img" aria-label="Lawful to chaotic: dead centre">
+                  <span class="pole pole--l">Lawful</span>
+                  <span class="track" style="--v: 48"><i class="fill"></i><i class="marker"></i></span>
+                  <span class="pole pole--r">Chaotic</span>
+                  <span class="readout">Dead centre</span>
+                </div>
+                <div class="scale" role="img" aria-label="Good to evil: dead centre">
+                  <span class="pole pole--l">Good</span>
+                  <span class="track" style="--v: 50"><i class="fill"></i><i class="marker"></i></span>
+                  <span class="pole pole--r">Evil</span>
+                  <span class="readout">Dead centre</span>
+                </div>
+                <div class="scale" role="img" aria-label="Speaking to listening: leans slightly to listening">
+                  <span class="pole pole--l">Speaking</span>
+                  <span class="track" style="--v: 58"><i class="fill"></i><i class="marker"></i></span>
+                  <span class="pole pole--r">Listening</span>
+                  <span class="readout">Leans slightly to listening</span>
+                </div>
+                <div class="scale" role="img" aria-label="Stepping in to letting be: leans slightly to letting be">
+                  <span class="pole pole--l">Stepping in</span>
+                  <span class="track" style="--v: 55"><i class="fill"></i><i class="marker"></i></span>
+                  <span class="pole pole--r">Letting be</span>
+                  <span class="readout">Leans slightly to letting be</span>
+                </div>
+              </div>
+              <button type="button" class="btn-text tip-btn">
+                <svg aria-hidden="true"><use href="#chev" /></svg>Tip the scales
+              </button>
+              <p class="tip-note" aria-live="polite"></p>
+            </div>
+          </div>
+          <a class="next" href="#alignment"
+            >Next · 05 Alignment<svg aria-hidden="true"><use href="#chev" /></svg
+          ></a>
+        </div>
+      </section>
+
+      <!-- 05: the centre of the record, split between day and night -->
+      <section
+        id="alignment"
+        class="band centre"
+        aria-labelledby="alignment-title"
+        data-label="Alignment"
+        data-num="05"
+      >
+        <div class="smoke seam-smoke seam-smoke--light" aria-hidden="true"></div>
+        <div class="smoke seam-smoke seam-smoke--dark" aria-hidden="true"></div>
+        <div class="centre-head">
+          <header class="band-head band-head--light">
+            <span class="band-num" aria-hidden="true">05</span>
+            <h2 id="alignment-title" tabindex="-1">
+              <span class="kicker">05 · Alignment</span><span class="band-title">True Neutral</span>
+            </h2>
+          </header>
+          <div class="band-head band-head--dark" aria-hidden="true">
+            <span class="band-num">05</span>
+            <p class="h2-copy">
+              <span class="kicker">05 · Alignment</span><span class="band-title">True Neutral</span>
+            </p>
+          </div>
+        </div>
+        <div class="centre-grid">
+          <div class="centre-light">
+            <p class="standfirst">The one fact nobody had to make up: he is true neutral, all the way down.</p>
+            <h3>What it means for him</h3>
+            <p data-draft>
+              True neutral, and this file would underline it if it underlined anything. Rhada does not see the world as
+              a contest between good and evil; he sees something closer to a loom, where every thread pulls against
+              another and the cloth only holds when the tension is even.
+            </p>
+            <p data-draft>
+              He steps in when something tips too far, like a bully, a hoarder or a fire left burning, and steps back
+              once it settles. People on opposite sides of an argument both trust him, and both are sometimes annoyed by
+              him.
+            </p>
+            <p class="legend legend--light">L/N/C: lawful, neutral, chaotic · G/N/E: good, neutral, evil</p>
+          </div>
+
+          <figure
+            class="medallion"
+            role="img"
+            aria-label="Alignment chart: of the nine alignments, Rhada sits in the exact centre, true neutral."
+          >
+            <svg class="medallion-orbit" viewBox="0 0 100 100" aria-hidden="true">
+              <circle cx="50" cy="50" r="49" />
+            </svg>
+            <span class="axis axis--good" aria-hidden="true">Good</span>
+            <span class="axis axis--evil" aria-hidden="true">Evil</span>
+            <span class="axis axis--law" aria-hidden="true">Law</span>
+            <span class="axis axis--chaos" aria-hidden="true">Chaos</span>
+            <div class="lattice" aria-hidden="true">
+              <svg class="spokes" viewBox="0 0 192 192">
+                <path d="M32 32 L96 96" data-for="lg" />
+                <path d="M96 32 V96" data-for="ng" />
+                <path d="M160 32 L96 96" data-for="cg" />
+                <path d="M32 96 H96" data-for="ln" />
+                <path d="M160 96 H96" data-for="cn" />
+                <path d="M32 160 L96 96" data-for="le" />
+                <path d="M96 160 V96" data-for="ne" />
+                <path d="M160 160 L96 96" data-for="ce" />
+              </svg>
+              <span class="cell" data-cell="lg">LG</span>
+              <span class="cell" data-cell="ng">NG</span>
+              <span class="cell" data-cell="cg">CG</span>
+              <span class="cell" data-cell="ln">LN</span>
+              <span class="cell cell--centre"
+                ><svg><use href="#even-mark" /></svg
+              ></span>
+              <span class="cell" data-cell="cn">CN</span>
+              <span class="cell" data-cell="le">LE</span>
+              <span class="cell" data-cell="ne">NE</span>
+              <span class="cell" data-cell="ce">CE</span>
+            </div>
+          </figure>
+
+          <div class="centre-dark">
+            <p class="kicker">A line he'd say</p>
+            <blockquote class="centre-quote" data-draft>
+              <svg class="qm" aria-hidden="true"><use href="#quote-open" /></svg>I'm not on your side. I'm not against
+              you. I'm holding the other end of the rope.<svg class="qm" aria-hidden="true">
+                <use href="#quote-close" />
+              </svg>
+            </blockquote>
+            <p class="attribution">— Rhada</p>
+            <p class="legend legend--dark">L/N/C: lawful, neutral, chaotic · G/N/E: good, neutral, evil</p>
+          </div>
+        </div>
+        <div class="wide centre-next">
+          <a class="next" href="#homeworld"
+            >Next · 06 Homeworld<svg aria-hidden="true"><use href="#chev" /></svg
+          ></a>
+        </div>
+      </section>
+
+      <!-- 06 -->
+      <section id="homeworld" class="band" aria-labelledby="homeworld-title" data-label="Homeworld" data-num="06">
+        <div class="wide">
+          <header class="band-head">
+            <span class="band-num" aria-hidden="true">06</span>
+            <h2 id="homeworld-title" tabindex="-1">
+              <span class="kicker">06 · Homeworld</span><span class="band-title" data-draft>Evergarden</span>
+            </h2>
+            <p class="standfirst epithet" data-draft>The world of even days</p>
+            <div class="band-rule" aria-hidden="true"></div>
+          </header>
+
+          <div
+            class="system"
+            role="img"
+            aria-label="Evergarden and its two moons: a small gold moon and a wide pale one."
+            data-draft
+          >
+            <span class="system-line" aria-hidden="true"></span>
+            <span class="system-body system-body--gold" aria-hidden="true"></span>
+            <span class="system-body system-body--home" aria-hidden="true"></span>
+            <span class="system-body system-body--pale" aria-hidden="true"></span>
+            <span class="system-label system-label--gold" aria-hidden="true">01 · Gold moon</span>
+            <span class="system-label system-label--home" aria-hidden="true">02 · Evergarden</span>
+            <span class="system-label system-label--pale" aria-hidden="true">03 · Pale moon</span>
+          </div>
+
+          <div class="world">
+            <figure class="planet-figure" data-reveal>
+              <canvas class="planet-canvas" aria-hidden="true"></canvas>
+              <svg class="planet-leaders" viewBox="0 0 440 440" aria-hidden="true">
+                <polyline points="150,262 60,330" />
+                <circle cx="60" cy="330" r="3" />
+                <polyline points="220,194 220,64" />
+                <circle cx="220" cy="64" r="3" />
+                <polyline points="290,250 380,330" />
+                <circle cx="380" cy="330" r="3" />
+              </svg>
+              <span class="planet-label planet-label--day" aria-hidden="true">Day side</span>
+              <span class="planet-label planet-label--home" aria-hidden="true">The even hour · home</span>
+              <span class="planet-label planet-label--night" aria-hidden="true">Night side</span>
+              <figcaption class="sr-only">
+                Evergarden seen from space: a lit day side, a dark night side, and the dusk line between them where it
+                is the even hour.
+              </figcaption>
+            </figure>
+            <div class="world-text">
+              <p data-draft data-reveal>
+                A warm, slow-turning world that spins perfectly upright, so day and night always last the same length
+                and there are no true seasons. Its gardens never stop growing.
+              </p>
+              <p data-draft data-reveal>
+                Grass terraces and dark fruit trees step down to wide, quiet rivers, with red-clay mesas beyond. Its
+                people like to say the planet taught them balance before they had a word for it.
+              </p>
+              <dl class="facts facts--dotted" data-draft>
+                <div>
+                  <dt>Day length</dt>
+                  <dd>28 hours, always 14 light and 14 dark</dd>
+                </div>
+                <div>
+                  <dt>Seasons</dt>
+                  <dd>None to speak of; the gardens never rest</dd>
+                </div>
+                <div>
+                  <dt>Land</dt>
+                  <dd>Grass terraces, slow rivers and red-clay mesas</dd>
+                </div>
+                <div>
+                  <dt>Sky</dt>
+                  <dd>A faint ring of gold dust, brightest at dusk</dd>
+                </div>
+                <div>
+                  <dt>Moons</dt>
+                  <dd>Two: one small and gold, one wide and pale</dd>
+                </div>
+                <div>
+                  <dt>People</dt>
+                  <dd>Small river clans of weavers, growers and star-readers</dd>
+                </div>
+                <div>
+                  <dt>Known for</dt>
+                  <dd>Woven cloth, knotted-cord star maps and history kept by heart</dd>
+                </div>
+              </dl>
+              <button type="button" class="btn-text" data-replay>
+                <svg aria-hidden="true"><use href="#ring-icon" /></svg>Replay arrival
+              </button>
+            </div>
+          </div>
+          <a class="next" href="#history"
+            >Next · 07 History<svg aria-hidden="true"><use href="#chev" /></svg
+          ></a>
+        </div>
+      </section>
+
+      <!-- 07 -->
+      <section id="history" class="band" aria-labelledby="history-title" data-label="History" data-num="07">
+        <div class="smoke history-smoke" aria-hidden="true"></div>
+        <div class="reading">
+          <header class="band-head">
+            <span class="band-num" aria-hidden="true">07</span>
+            <h2 id="history-title" tabindex="-1">
+              <span class="kicker">07 · History</span><span class="band-title">Before</span>
+            </h2>
+            <p class="standfirst" data-draft>From the even hour he was born in to the watch he keeps now.</p>
+            <div class="band-rule" aria-hidden="true"></div>
+          </header>
+          <div class="chapters" data-draft>
+            <span class="cord chapters-cord" aria-hidden="true"><span class="chapters-fill"></span></span>
+            <article id="history-1" class="chapter" data-reveal>
+              <span class="chapter-node" aria-hidden="true">I</span>
+              <h3><span class="chapter-word">Chapter I</span><span class="chapter-title">Born on the line</span></h3>
+              <p>
+                Rhada was born at the even hour, the exact moment Evergarden's day tips from light into dark. The
+                Riverloom clan took it as a good sign: a child born on the line, they say, spends his life standing on
+                it. The spoken record of his birth is two lines long and notes nothing unusual, which the clan considers
+                a good beginning too.
+              </p>
+            </article>
+            <svg class="chapter-break" aria-hidden="true"><use href="#chev-stack" /></svg>
+            <article id="history-2" class="chapter" data-reveal>
+              <span class="chapter-node" aria-hidden="true">II</span>
+              <h3><span class="chapter-word">Chapter II</span><span class="chapter-title">By the river</span></h3>
+              <p>
+                He grew up by a wide, quiet river below the grass terraces, slow to speak and quick to notice. He
+                learned cord knots before letters, and the names of the stars before either.
+              </p>
+              <p>
+                When disputes came to the gathering ring, he would sit at the edge and, if asked, repeat exactly what
+                each side had said, adding nothing of his own. By twelve, the elders were asking on purpose, mostly
+                because he never seemed to want anyone to win.
+              </p>
+            </article>
+            <svg class="chapter-break" aria-hidden="true"><use href="#chev-stack" /></svg>
+            <article id="history-3" class="chapter" data-reveal>
+              <span class="chapter-node" aria-hidden="true">III</span>
+              <h3><span class="chapter-word">Chapter III</span><span class="chapter-title">First wraps</span></h3>
+              <p>
+                At fourteen he took his first wraps, the pale undyed cloth of the dusk-keepers, wound chest first and
+                hands last for the long work at the cord frames and the evening watch.
+              </p>
+              <p>
+                Dusk-keepers read the sky at the even hour and add each day to the spoken record, kind or unkind,
+                without deciding what it meant. Rhada was suited to it from the first evening, and he still starts over
+                if he winds his wraps in the wrong order.
+              </p>
+            </article>
+            <svg class="chapter-break" aria-hidden="true"><use href="#chev-stack" /></svg>
+            <article id="history-4" class="chapter" data-reveal>
+              <span class="chapter-node" aria-hidden="true">IV</span>
+              <h3><span class="chapter-word">Chapter IV</span><span class="chapter-title">Half and half</span></h3>
+              <p>
+                These days he splits his time the way Evergarden splits its days. Half goes to the clan, standing the
+                evening watch, mending cloth and listening to arguments; the other half is his own, spent wandering the
+                mesas and swapping stories with the traders who land a few times a year.
+              </p>
+              <p>
+                People who agree on very little both say they trust him, which is rarer than it should be. This file
+                remains open.
+              </p>
+            </article>
+          </div>
+          <a class="next" href="#habits"
+            >Next · 08 Habits &amp; likes<svg aria-hidden="true"><use href="#chev" /></svg
+          ></a>
+        </div>
+      </section>
+
+      <!-- 08 -->
+      <section id="habits" class="band" aria-labelledby="habits-title" data-label="Habits & likes" data-num="08">
+        <div class="wide">
+          <header class="band-head">
+            <span class="band-num" aria-hidden="true">08</span>
+            <h2 id="habits-title" tabindex="-1">
+              <span class="kicker">08 · Habits &amp; likes</span><span class="band-title">Small Rituals</span>
+            </h2>
+            <p class="standfirst" data-draft>What he does with his hands and his evenings.</p>
+            <div class="band-rule" aria-hidden="true"></div>
+          </header>
+          <div class="rituals" data-draft>
+            <div class="rituals-habits">
+              <p class="label">Habits</p>
+              <span class="chevron-strip" aria-hidden="true"></span>
+              <ul class="habit-list">
+                <li data-reveal>
+                  <span class="habit-head">When listening</span>
+                  <span class="habit-text"
+                    >Cheek against his hand, head tilted, silent until you have completely finished. If his hand is at
+                    his face, he is paying full attention.</span
+                  >
+                </li>
+                <li data-reveal>
+                  <span class="habit-head">When thinking</span>
+                  <span class="habit-text">Re-ties knots that do not need re-tying.</span>
+                </li>
+                <li data-reveal>
+                  <span class="habit-head">Every clear night</span>
+                  <span class="habit-text"
+                    >Ties one knot in a long cord: a star calendar he has kept since he was small.</span
+                  >
+                </li>
+                <li data-reveal>
+                  <span class="habit-head">Favourite hour</span>
+                  <span class="habit-text">The even hour, just as the light tips into dark.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="rituals-axis" aria-hidden="true"><span></span></div>
+            <div class="rituals-likes">
+              <p class="label">Likes</p>
+              <ul class="banners">
+                <li class="banner banner--gold" data-reveal>
+                  <span class="banner-node" aria-hidden="true"></span><span class="banner-text">Dusk</span>
+                </li>
+                <li class="banner banner--gold" data-reveal>
+                  <span class="banner-node" aria-hidden="true"></span><span class="banner-text">River stones</span>
+                </li>
+                <li class="banner banner--gold" data-reveal>
+                  <span class="banner-node" aria-hidden="true"></span><span class="banner-text">Warm flatbread</span>
+                </li>
+                <li class="banner banner--gold" data-reveal>
+                  <span class="banner-node" aria-hidden="true"></span
+                  ><span class="banner-text">The clack of a loom</span>
+                </li>
+                <li class="banner banner--gold" data-reveal>
+                  <span class="banner-node" aria-hidden="true"></span
+                  ><span class="banner-text">Meals eaten slowly with other people</span>
+                </li>
+              </ul>
+              <p class="label">Not fond of</p>
+              <ul class="banners">
+                <li class="banner banner--dark" data-reveal>
+                  <span class="banner-node" aria-hidden="true"></span><span class="banner-text">Being rushed</span>
+                </li>
+                <li class="banner banner--dark" data-reveal>
+                  <span class="banner-node" aria-hidden="true"></span><span class="banner-text">Loud certainty</span>
+                </li>
+                <li class="banner banner--dark" data-reveal>
+                  <span class="banner-node" aria-hidden="true"></span
+                  ><span class="banner-text">Being told to pick a side before both have spoken</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <a class="next" href="#words"
+            >Next · 09 Quotes &amp; trivia<svg aria-hidden="true"><use href="#chev" /></svg
+          ></a>
+        </div>
+      </section>
+
+      <!-- 09 -->
+      <section id="words" class="band" aria-labelledby="words-title" data-label="Quotes & trivia" data-num="09">
+        <div class="wide">
+          <header class="band-head">
+            <span class="band-num" aria-hidden="true">09</span>
+            <h2 id="words-title" tabindex="-1">
+              <span class="kicker">09 · Quotes &amp; trivia</span><span class="band-title">In His Words</span>
+            </h2>
+            <p class="standfirst" data-draft>A few things he has said, and a few things worth knowing.</p>
+            <div class="band-rule" aria-hidden="true"></div>
+          </header>
+
+          <ol class="quotes" data-draft>
+            <li>
+              <figure id="quote-1" class="quote-plate" data-reveal>
+                <figcaption><span class="kicker">Rhada</span> · to a new watch-keeper</figcaption>
+                <blockquote>
+                  <svg class="qm" aria-hidden="true"><use href="#quote-open" /></svg>Look first. It'll still be there in
+                  a minute, and so will you.<svg class="qm" aria-hidden="true"><use href="#quote-close" /></svg>
+                </blockquote>
+              </figure>
+            </li>
+            <li>
+              <figure id="quote-2" class="quote-plate" data-reveal>
+                <figcaption><span class="kicker">Rhada</span> · at the mending frames</figcaption>
+                <blockquote>
+                  <svg class="qm" aria-hidden="true"><use href="#quote-open" /></svg>Some things you mend. Some things
+                  you let finish.<svg class="qm" aria-hidden="true"><use href="#quote-close" /></svg>
+                </blockquote>
+              </figure>
+            </li>
+            <li>
+              <figure id="quote-3" class="quote-plate" data-reveal>
+                <figcaption><span class="kicker">Rhada</span> · when asked what he thinks</figcaption>
+                <blockquote>
+                  <svg class="qm" aria-hidden="true"><use href="#quote-open" /></svg>I don't know yet. That's not the
+                  same as not caring.<svg class="qm" aria-hidden="true"><use href="#quote-close" /></svg>
+                </blockquote>
+              </figure>
+            </li>
+            <li>
+              <figure id="quote-4" class="quote-plate" data-reveal>
+                <figcaption><span class="kicker">Rhada</span> · to two friends mid-argument</figcaption>
+                <blockquote>
+                  <svg class="qm" aria-hidden="true"><use href="#quote-open" /></svg>You're both a little right. That's
+                  the annoying part.<svg class="qm" aria-hidden="true"><use href="#quote-close" /></svg>
+                </blockquote>
+              </figure>
+            </li>
+          </ol>
+
+          <p class="label">Small truths</p>
+          <span class="chevron-strip" aria-hidden="true"></span>
+          <ol class="trivia" data-draft>
+            <li id="trivia-1" class="trivia-card" data-reveal>
+              <span class="trivia-num"><span class="outline">01</span><span class="of"> / 07</span></span>
+              <p>He can sit still on the terraces for so long that birds walk right past his knees.</p>
+              <span class="trivia-tag">Stillness</span>
+            </li>
+            <li id="trivia-2" class="trivia-card" data-reveal>
+              <span class="trivia-num"><span class="outline">02</span><span class="of"> / 07</span></span>
+              <p>
+                He traded a length of cord for the lavender shirt at a traders' stall. It is a size too big, and he has
+                decided not to ask what the print says.
+              </p>
+              <span class="trivia-tag">Look A</span>
+            </li>
+            <li id="trivia-3" class="trivia-card" data-reveal>
+              <span class="trivia-num"><span class="gild">03</span><span class="of"> / 07</span></span>
+              <p>He adds a thin cord bracelet to his wrist for every year he has kept the evening watch.</p>
+              <span class="trivia-tag">The watch</span>
+            </li>
+            <li id="trivia-4" class="trivia-card" data-reveal>
+              <span class="trivia-num"><span class="outline">04</span><span class="of"> / 07</span></span>
+              <p>
+                Most Riverloom wraps are dyed. A dusk-keeper's are left pale so that their clothes, at least, take no
+                side.
+              </p>
+              <span class="trivia-tag">Look B</span>
+            </li>
+            <li id="trivia-5" class="trivia-card" data-reveal>
+              <span class="trivia-num"><span class="outline">05</span><span class="of"> / 07</span></span>
+              <p>
+                On Evergarden everyone takes the planet's name as a surname, so his full name simply means Rhada, of
+                Evergarden. People tell one another apart by clan.
+              </p>
+              <span class="trivia-tag">Names</span>
+            </li>
+            <li id="trivia-6" class="trivia-card" data-reveal>
+              <span class="trivia-num"><span class="gild">06</span><span class="of"> / 07</span></span>
+              <p>He says the stars are easier to read than people, because the stars are not trying to be read.</p>
+              <span class="trivia-tag">Stars</span>
+            </li>
+            <li id="trivia-7" class="trivia-card" data-reveal>
+              <span class="trivia-num"><span class="outline">07</span><span class="of"> / 07</span></span>
+              <p>
+                Evergarden's shadows fall the same way every day of the year, so he can tell the time to within a few
+                minutes just by glancing at the ground.
+              </p>
+              <span class="trivia-tag">Time</span>
+            </li>
+          </ol>
+        </div>
+      </section>
+    </main>
+
+    <footer class="colophon">
+      <span class="zigzag" aria-hidden="true"></span>
+      <svg class="colophon-mark" aria-hidden="true"><use href="#even-mark" /></svg>
+      <p class="colophon-title">The even hour record, kept for Rhada Evergarden</p>
+      <p class="colophon-note">
+        Draft record: everything beyond his name, pronouns, alignment and two looks is a working draft and may change.
+      </p>
+      <p class="colophon-links">
+        <button type="button" class="link-btn" data-replay>Replay arrival</button>
+        <span class="dot" aria-hidden="true"></span>
+        <button type="button" class="link-btn" data-open-index>Index</button>
+        <span class="dot" aria-hidden="true"></span>
+        <button type="button" class="link-btn still-btn" aria-pressed="false">
+          Ambient motion: <span class="still-on">On</span><span class="still-off">Off</span>
+        </button>
+        <span class="dot" aria-hidden="true"></span>
+        <a class="link-btn" href="#top" data-to-top>Back to top</a>
+      </p>
+    </footer>
+
+    <dialog id="index" class="index" aria-labelledby="index-title">
+      <div class="smoke index-smoke" aria-hidden="true"></div>
+      <svg class="corner corner--tl" aria-hidden="true"><use href="#corner" /></svg>
+      <svg class="corner corner--tr" aria-hidden="true"><use href="#corner" /></svg>
+      <svg class="corner corner--bl" aria-hidden="true"><use href="#corner" /></svg>
+      <svg class="corner corner--br" aria-hidden="true"><use href="#corner" /></svg>
+      <form method="dialog" class="index-close-form">
+        <button class="index-close" value="close" aria-label="Close index">
+          <span aria-hidden="true">Close</span>
+        </button>
+      </form>
+      <div class="index-grid">
+        <div class="index-intro">
+          <h2 id="index-title" class="gild">Index</h2>
+          <p class="index-sub">Nine sections of the record.</p>
+          <button type="button" class="btn-text" data-replay>
+            <svg aria-hidden="true"><use href="#ring-icon" /></svg>Replay arrival
+          </button>
+        </div>
+        <ol class="index-list">
+          <li>
+            <a class="banner banner--dark" href="#top"
+              ><span class="banner-node"
+                ><svg aria-hidden="true"><use href="#even-mark" /></svg></span
+              ><span class="index-label">Arrival</span><span class="index-title">Rhada Evergarden</span></a
+            >
+          </li>
+          <li>
+            <a class="banner banner--dark" href="#overview"
+              ><span class="banner-node">01</span><span class="index-label">Overview</span
+              ><span class="index-title">Who He Is</span></a
+            >
+          </li>
+          <li>
+            <a class="banner banner--dark" href="#record"
+              ><span class="banner-node">02</span><span class="index-label">Record</span
+              ><span class="index-title">The Record</span></a
+            >
+          </li>
+          <li>
+            <a class="banner banner--dark" href="#looks"
+              ><span class="banner-node">03</span><span class="index-label">Looks</span
+              ><span class="index-title">Two Looks</span></a
+            >
+          </li>
+          <li>
+            <a class="banner banner--dark" href="#personality"
+              ><span class="banner-node">04</span><span class="index-label">Personality</span
+              ><span class="index-title">His Nature</span></a
+            >
+          </li>
+          <li>
+            <a class="banner banner--dark" href="#alignment"
+              ><span class="banner-node">05</span><span class="index-label">Alignment</span
+              ><span class="index-title">True Neutral</span></a
+            >
+          </li>
+          <li>
+            <a class="banner banner--dark" href="#homeworld"
+              ><span class="banner-node">06</span><span class="index-label">Homeworld</span
+              ><span class="index-title">Evergarden</span></a
+            >
+          </li>
+          <li>
+            <a class="banner banner--dark" href="#history"
+              ><span class="banner-node">07</span><span class="index-label">History</span
+              ><span class="index-title">Before</span></a
+            >
+          </li>
+          <li>
+            <a class="banner banner--dark" href="#habits"
+              ><span class="banner-node">08</span><span class="index-label">Habits &amp; likes</span
+              ><span class="index-title">Small Rituals</span></a
+            >
+          </li>
+          <li>
+            <a class="banner banner--dark" href="#words"
+              ><span class="banner-node">09</span><span class="index-label">Quotes &amp; trivia</span
+              ><span class="index-title">In His Words</span></a
+            >
+          </li>
+        </ol>
+      </div>
+    </dialog>
+
+    <div id="live" class="sr-only" aria-live="polite"></div>
+    <canvas class="dust" aria-hidden="true"></canvas>
+  </body>
+</html>
