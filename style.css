@@ -2156,9 +2156,146 @@ select {
   position: absolute;
   left: 0;
   top: 0;
-  width: 76px;
-  height: 60px;
-  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.45));
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 3px 2px rgba(0, 0, 0, 0.5));
+  user-select: none;
+  /* each animal moves every frame; its own layer keeps the shadow from being repainted */
+  will-change: translate, transform;
+}
+
+.critter.gait-fly {
+  transform-origin: 50% 50%;
+}
+
+.critter.gait-hang {
+  transform-origin: 50% 0;
+}
+
+/* the bio you get by right-clicking an animal */
+.bio-card {
+  position: fixed;
+  z-index: 960;
+  width: min(300px, calc(100vw - 16px));
+  padding: 12px 14px 14px;
+  border: 1px solid var(--line-strong);
+  border-radius: 12px;
+  background: var(--glass);
+  box-shadow:
+    0 24px 60px -16px rgba(0, 0, 0, 0.8),
+    0 0 40px -10px rgba(236, 124, 245, 0.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.3);
+  backdrop-filter: blur(18px) saturate(1.3);
+}
+
+.bio-card.pop {
+  animation: pop 0.3s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+.bio-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bio-head > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.bio-head img {
+  flex: none;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.5));
+}
+
+.bio-head h3 {
+  margin: 0;
+  font: 400 14px/1.2 var(--font-pixel);
+  color: var(--mist);
+}
+
+.bio-head p {
+  margin: 3px 0 0;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--orchid);
+}
+
+.bio-head .tb {
+  align-self: flex-start;
+}
+
+.bio-facts {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 6px 10px;
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.bio-facts dt {
+  color: var(--muted);
+}
+
+.bio-facts dd {
+  margin: 0;
+  color: var(--lilac);
+  text-wrap: pretty;
+}
+
+/* zoo.exe */
+.window[data-app="zoo"] {
+  width: 480px;
+}
+
+.zoo {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+}
+
+.zoo-intro {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+.zoo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  gap: 6px;
+}
+
+.zoo-card {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  padding: 8px 4px 6px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: rgba(7, 4, 16, 0.4);
+  font-size: 10.5px;
+  line-height: 1.25;
+  text-align: center;
+  color: var(--lilac);
+  transition:
+    transform 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.zoo-card img {
+  transition: transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+}
+
+.zoo-card:hover {
+  border-color: var(--line-strong);
+  background: var(--glass-hi);
+}
+
+.zoo-card:hover img {
+  transform: translateY(-3px) rotate(-6deg) scale(1.12);
 }
 
 .critter-fx {
@@ -2250,6 +2387,31 @@ select {
 
 .cursor-down .cursor-ring {
   scale: 0.8;
+}
+
+.cursor-ripple {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 4999;
+  width: 40px;
+  height: 40px;
+  margin: -20px 0 0 -20px;
+  border: 2px solid var(--magenta);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: ripple 0.45s ease-out forwards;
+}
+
+@keyframes ripple {
+  from {
+    opacity: 0.9;
+    scale: 0.2;
+  }
+  to {
+    opacity: 0;
+    scale: 1.4;
+  }
 }
 
 /* phones: windows stack in one scrolling column */

@@ -243,6 +243,23 @@
     }
   }
 
+  function bio(words) {
+    if (!words.length)
+      return print(
+        ["usage: bio <animal>. try ", "t-dim"],
+        ["bio otter", "t-key"],
+        [" or ", "t-dim"],
+        ["open zoo", "t-key"],
+      );
+    const animal = GIL.zoo.find(words.join(" "));
+    if (!animal)
+      return print([`bio: no ${words.join(" ")} here. `, "t-err"], ["open zoo", "t-key"], [" to see who is.", "t-dim"]);
+    print([animal.name, "t-hl"], ["  ", ""], [animal.latin, "t-dim"]);
+    for (const key of ["lives", "eats", "fact"]) {
+      print(el("span", { class: "e-kv" }, [span(key, "e-k"), span(animal[key], "e-v")]));
+    }
+  }
+
   function links() {
     for (const link of site.links) {
       print(
@@ -261,6 +278,7 @@
     cat: { args: "<file>", desc: "print a file", run: cat },
     open: { args: "<app>", desc: "open a window", run: open },
     music: { args: "[play|pause|stop|vol n]", desc: "control the music", run: music },
+    bio: { args: "<animal>", desc: "read about one of the animals", run: bio },
     links: { desc: `${site.name}'s links`, run: links },
     whoami: {
       desc: "who are you?",

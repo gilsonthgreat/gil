@@ -289,7 +289,7 @@
       ok(`mounted /home/${site.name}`),
       ok(`started ${site.name}sh`),
       ok("started music.exe"),
-      ok("woke up the pets"),
+      ok(`woke up ${ANIMALS.length} animals`),
       ok("taught the chess bot the rules"),
       ok(`loaded profile ${site.handle}`),
       ok("reached target: desktop"),

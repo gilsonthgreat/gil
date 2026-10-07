@@ -11,12 +11,16 @@
 
   root.classList.add("custom-cursor");
 
+  // Position lives in `translate`, not `transform`, so the press effect (`scale` in style.css)
+  // shrinks the dot in place instead of scaling its distance from the corner of the screen.
+  const place = (node, x, y) => (node.style.translate = `${x}px ${y}px`);
+
   function follow() {
     // the ring eases toward the dot; with reduced motion it just sits on it
     const ease = GIL.reduceMotion ? 1 : 0.2;
     trail.x += (pos.x - trail.x) * ease;
     trail.y += (pos.y - trail.y) * ease;
-    ring.style.transform = `translate3d(${trail.x}px, ${trail.y}px, 0)`;
+    place(ring, trail.x, trail.y);
     frameId = Math.abs(pos.x - trail.x) + Math.abs(pos.y - trail.y) > 0.3 ? requestAnimationFrame(follow) : 0;
   }
 
@@ -24,7 +28,13 @@
     if (e.pointerType !== "mouse") return;
     pos.x = e.clientX;
     pos.y = e.clientY;
-    dot.style.transform = `translate3d(${pos.x}px, ${pos.y}px, 0)`;
+    place(dot, pos.x, pos.y);
+    // coming back into the window: start the ring on the dot rather than sliding in from where it left
+    if (!root.classList.contains("cursor-visible")) {
+      trail.x = pos.x;
+      trail.y = pos.y;
+      place(ring, pos.x, pos.y);
+    }
     root.classList.add("cursor-visible");
     root.classList.toggle("cursor-hover", Boolean(e.target.closest?.(CLICKABLE)));
     if (!frameId) frameId = requestAnimationFrame(follow);
@@ -34,6 +44,15 @@
   document.addEventListener("mouseout", (e) => {
     if (!e.relatedTarget || e.relatedTarget.tagName === "IFRAME") root.classList.remove("cursor-visible");
   });
-  window.addEventListener("pointerdown", () => root.classList.add("cursor-down"));
+
+  window.addEventListener("pointerdown", (e) => {
+    if (e.pointerType !== "mouse") return;
+    root.classList.add("cursor-down");
+    const ripple = GIL.el("span", { class: "cursor-ripple", "aria-hidden": "true" });
+    place(ripple, e.clientX, e.clientY);
+    ripple.addEventListener("animationend", () => ripple.remove());
+    document.body.append(ripple);
+  });
   window.addEventListener("pointerup", () => root.classList.remove("cursor-down"));
+  window.addEventListener("blur", () => root.classList.remove("cursor-down"));
 })();

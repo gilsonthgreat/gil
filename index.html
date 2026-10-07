@@ -351,6 +351,16 @@
         </div>
       </section>
 
+      <section class="window" data-app="zoo" data-title="zoo.exe" data-icon="i-paw" hidden>
+        <div class="window-body zoo">
+          <p class="zoo-intro">
+            <span id="zoo-count"></span> animals live on this desktop. right-click one (or long-press on a phone) to
+            read about it, or pick one here.
+          </p>
+          <div class="zoo-grid" id="zoo-grid"></div>
+        </div>
+      </section>
+
       <section class="window" data-app="flappy" data-title="flappy.exe" data-icon="i-bird" hidden>
         <div class="window-body flappy">
           <canvas id="flappy-canvas" tabindex="0" aria-label="flappy game: click, tap or press space to flap"></canvas>
@@ -360,6 +370,27 @@
     </main>
 
     <div id="critters" aria-hidden="true"></div>
+
+    <div class="bio-card" id="bio-card" role="dialog" aria-labelledby="bio-name" hidden>
+      <div class="bio-head">
+        <img id="bio-img" alt="" width="56" height="56" />
+        <div>
+          <h3 id="bio-name"></h3>
+          <p id="bio-latin"></p>
+        </div>
+        <button type="button" class="tb" id="bio-close" aria-label="close">
+          <svg class="ico" aria-hidden="true"><use href="#i-close" /></svg>
+        </button>
+      </div>
+      <dl class="bio-facts">
+        <dt>lives</dt>
+        <dd id="bio-lives"></dd>
+        <dt>eats</dt>
+        <dd id="bio-eats"></dd>
+        <dt>fun fact</dt>
+        <dd id="bio-fact"></dd>
+      </dl>
+    </div>
 
     <footer class="taskbar">
       <button
@@ -400,12 +431,14 @@
     <noscript><p class="noscript">gilOS needs JavaScript to boot. turn it on and refresh the page.</p></noscript>
 
     <script src="config.js"></script>
+    <script src="animals.js"></script>
     <script src="vendor/chess.js"></script>
     <script src="js/core.js"></script>
     <script src="js/desktop.js"></script>
     <script src="js/content.js"></script>
     <script src="js/sky.js"></script>
     <script src="js/cursor.js"></script>
+    <script src="js/zoo.js"></script>
     <script src="js/critters.js"></script>
     <script src="js/music.js"></script>
     <script src="js/terminal.js"></script>
